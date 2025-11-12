@@ -1,150 +1,560 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP Student Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Wings</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+  <style>
+    /* Reset and Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --primary-color: #0d9488;
+      --secondary-color: #f4f7f9;
+      --text-color: #1f2937;
+      --login-bg-color: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      --sidebar-bg: #343a40;
+      --sidebar-active: #007bff;
+      --submenu-bg: #2a3035;
+      --card-bg: #ffffff;
+      --border-color: #e5e7eb;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    /* ---------- MODERN LOGIN SCREEN STYLES ---------- */
+    #loginScreen { min-height: 100vh; display: flex; background: var(--login-bg-color); }
+    .branding-panel { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; padding: 40px; text-align: center; background: rgba(0, 0, 0, 0.2); }
+    .branding-panel h1 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
+    .login-area-wrapper { width: 450px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15); flex-shrink: 0; padding: 20px; }
+    .login-card { padding: 40px 30px; width: 100%; max-width: 350px; text-align: center; background: rgba(255, 255, 255, 0.95); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.3); }
+    .header-logo { margin-bottom: 30px; } 
+    .header-logo h2 { color: var(--text-color); font-size: 2.2rem; }
+    .header-logo p { color: #6b7280; font-size: 0.9rem; margin-top: 5px;}
+    .input-group { margin-bottom: 18px; text-align: left; }
+    .input-group label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--text-color); font-size: 0.9rem; }
+    .input-wrapper { position: relative; }
+    .input-wrapper i.fas { position: absolute; left: 0; top: 50%; transform: translateY(-50%); color: var(--primary-color); font-size: 1.2rem; padding: 0 15px; z-index: 10; border-right: 1px solid #d1d5db; }
+    .input-wrapper i#togglePassword { position: absolute; right: 0; left: auto; border-right: none; border-left: 1px solid #d1d5db; cursor: pointer; padding: 0 15px; color: #9ca3af; font-size: 1rem; transition: color 0.3s; }
+    .login-card input { width: 100%; padding: 14px 15px 14px 60px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-size: 1rem; font-weight: 500; }
+    .login-card input#password { padding-right: 60px; }
+    .login-card button { width: 100%; margin-top: 25px; padding: 14px; border: none; background: var(--primary-color); color: #fff; border-radius: 8px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.4); }
+    .design-credit { margin-top: 25px; }
+
+
+    /* ---------- MAIN APP UI STYLES (ICON-ONLY Sidebar & Content) ---------- */
+    .main-container { 
+      display: flex; 
+      min-height: 100vh;
+      background-color: var(--secondary-color);
+      height: 100vh;
+      overflow: hidden; 
+    }
+    .hover-trigger-area { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 1002; }
+    .toggle-btn { position: absolute; top: 15px; left: 10px; background: var(--sidebar-active); color: white; border: none; padding: 10px 14px; cursor: pointer; font-size: 1.2rem; border-radius: 4px; visibility: hidden; opacity: 0; z-index: 1001; transition: opacity 0.3s, visibility 0.3s; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); }
+    .hover-trigger-area:hover .toggle-btn { visibility: visible; opacity: 1; }
+
+    .sidebar { width: 0; background-color: var(--sidebar-bg); color: white; padding-top: 60px; flex-shrink: 0; overflow: hidden; transition: width 0.3s; z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2); }
+    .sidebar.visible { width: 60px; }
+    .sidebar-nav ul { list-style: none; padding: 0; }
+    .sidebar-nav a { display: flex; align-items: center; justify-content: center; padding: 15px 0; color: white; text-decoration: none; transition: background-color 0.3s; width: 60px; position: relative; }
+    .sidebar-nav a i { font-size: 1.5rem; margin: 0; width: 100%; text-align: center; }
+
+    /* Submenu Container Styles */
+    .submenu-container { position: relative; }
+    .submenu {
+      list-style: none; padding: 0; background: var(--submenu-bg); overflow: hidden;
+      height: 0; transition: height 0.3s ease;
+    }
+    .submenu li a { padding: 10px 0; width: 60px; background-color: transparent; }
+    .submenu li a i { font-size: 1.3rem; }
+    .sidebar-nav span, .submenu-container > a i.fa-angle-down { display: none !important; }
+    .sidebar-nav a:hover { background-color: #495057; }
+    .sidebar-nav a.active { background-color: var(--sidebar-active); }
+    .submenu li a:hover { background-color: #374151; }
     
-    <style>
-        :root {
-            /* Define a modern color palette with CSS Variables */
-            --primary-color: #4C51BF; /* Deep Indigo for main actions */
-            --secondary-color: #10B981; /* Emerald Green for success/data */
-            --background-color: #F8F9FA; /* Light off-white background */
-            --card-bg: #FFFFFF;
-            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .dashboard-container {
-            display: flex;
-            gap: 30px; 
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 16px; /* Increased border radius for modern feel */
-            box-shadow: var(--shadow-light);
-            padding: 35px;
-            text-align: left;
-            flex: 1;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden; /* Helps contain the pseudo-element glow */
-        }
-
-        .card:hover {
-            transform: translateY(-8px); /* Lift effect on hover */
-            box-shadow: var(--shadow-hover);
-        }
-        
-        /* Icon Styling */
-        .card-icon {
-            font-size: 3rem; 
-            margin-bottom: 20px;
-            display: block;
-            line-height: 1;
-        }
-
-        #add-card .card-icon {
-            color: var(--primary-color); /* Indigo icon color */
-        }
-
-        #list-card .card-icon {
-            color: var(--secondary-color); /* Emerald icon color */
-        }
-
-        .card h2 {
-            color: #1A202C; /* Dark text for contrast */
-            margin: 0 0 10px 0;
-            font-size: 1.6rem;
-            font-weight: 800; /* Extra bold for impact */
-        }
-        
-        .card p {
-            color: #6B7280; /* Subdued text color */
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .card a {
-            display: inline-block;
-            background: linear-gradient(45deg, var(--primary-color), #6D72C4); /* Gradient button */
-            color: white;
-            padding: 12px 28px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(76, 81, 191, 0.3);
-        }
-
-        .card a:hover {
-            background: linear-gradient(45deg, #6D72C4, var(--primary-color));
-            box-shadow: 0 6px 15px rgba(76, 81, 191, 0.5);
-        }
-        
-        /* Optional: Adding a subtle glow effect on the card corner */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            border-radius: 16px 16px 0 0;
-            /* Default subtle color */
-            background-color: var(--background-color); 
-            transition: background-color 0.3s ease;
-        }
-
-        #add-card:hover::before {
-            background-color: var(--primary-color);
-        }
-
-        #list-card:hover::before {
-            background-color: var(--secondary-color);
-        }
-
-    </style>
+    .content-area { 
+      flex-grow: 1; 
+      padding: 0; 
+      height: 100vh;
+      overflow-y: auto; 
+    }
+    
+    /* Iframe Full Height */
+    #pageFrame { 
+      width: 100%; 
+      height: 100%; 
+      border: none;
+    }
+    
+    #localContentArea { 
+      padding: 20px; 
+    }
+    
+    /* Utility class for role restriction */
+    .hidden-by-role {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="dashboard-container">
-        
-        <div class="card" id="add-card">
-            <span class="card-icon">➕</span>
-            
-            <h2>Student Enrollment</h2>
-            <p>Onboard new students to the system, create their profile, and securely store data in your Firebase Realtime Database/Firestore.</p>
-            
-            <a href="https://penportindia.github.io/Wings/Student/Student.html">Add & View Student</a>
+  <section id="loginScreen">
+    <div class="branding-panel">
+      <h1>Welcome to The Wings</h1>
+      <p>Your comprehensive student management system. Streamline your school operations with modern, efficient tools.</p>
+    </div>
+    <div class="login-area-wrapper">
+      <div class="login-card">
+        <div class="header-logo">
+          <h2>The Wings</h2>
+          <p>Sign in to your account</p>
         </div>
-
-        <div class="card" id="list-card">
-            <span class="card-icon">📋</span>
-
-            <h2>Student Directory</h2>
-            <p>Access the complete list of all active students. Use this link for bulk actions, searching, filtering, and data export.</p>
-            
-            <a href="https://penportindia.github.io/Wings/Student/Studentlist.html">Student List</a>
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="phone">Phone Number</label>
+            <div class="input-wrapper">
+              <i class="fas fa-mobile-alt"></i>
+              <input type="tel" id="phone" placeholder="Enter phone number" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" placeholder="Enter password" required />
+              <i class="fas fa-eye-slash" id="togglePassword"></i> 
+            </div>
+          </div>
+          <button type="submit" id="loginBtn">Log In</button>
+        </form>
+        <div id="loginError" class="error"></div>
+        <div class="design-credit">
+          Design Developed by <a href="https://penportindia.github.io/penport/" target="_blank">Penport India</a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="main-container" id="app" style="display: none;">
+    <div class="hover-trigger-area">
+      <button class="toggle-btn" id="sidebarToggle" title="Toggle Menu">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
 
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <ul>
+          <li id="menu-dashboard" data-roles="Developer,Admin,Clerk,Account,Teacher"><a href="#dashboard" title="Dashboard" data-route="dashboard" data-type="local"><i class="fas fa-tachometer-alt"></i></a></li>
+          
+          <li class="submenu-container" id="menu-student" data-roles="Developer,Admin,Clerk,Account,Teacher">
+            <a href="#" title="Student" data-route="student-menu" data-type="parent-menu"><i class="fas fa-user-graduate"></i></a>
+            <ul class="submenu">
+              <li id="submenu-add-student" data-roles="Developer,Admin,Clerk,Account"><a href="https://penportindia.github.io/Wings/Student/Student.html" title="Add Student" data-route="add-student" data-type="url"><i class="fas fa-plus-circle"></i></a></li>
+              <li id="submenu-list-student" data-roles="Developer,Admin,Clerk,Account,Teacher"><a href="https://penportindia.github.io/Wings/Student/Studentlist.html" title="Student List" data-route="list" data-type="url"><i class="fas fa-users"></i></a></li>
+            </ul>
+          </li>
+
+          <li class="submenu-container" id="menu-fee" data-roles="Developer,Admin,Clerk,Account">
+            <a href="#" title="Fee" data-route="fee-menu" data-type="parent-menu"><i class="fas fa-wallet"></i></a>
+            <ul class="submenu">
+              <li><a href="#collectfee" title="Collect Fee" data-route="collect-fee" data-type="local"><i class="fas fa-file-invoice"></i></a></li>
+              <li><a href="#feereport" title="Fee Report" data-route="fee-report" data-type="local"><i class="fas fa-chart-bar"></i></a></li>
+            </ul>
+          </li>
+
+          <li class="submenu-container" id="menu-setting" data-roles="Developer,Admin,Clerk,Account">
+            <a href="#" title="Setting" data-route="setting-menu" data-type="parent-menu"><i class="fas fa-cog"></i></a>
+            <ul class="submenu">
+              <li><a href="#feehead" title="Fee Head" data-route="fee-head" data-type="local"><i class="fas fa-rupee-sign"></i></a></li>
+            </ul>
+          </li>
+
+          <li id="menu-user-single" data-roles="Developer,Admin">
+            <a href="https://penportindia.github.io/Wings/User.html" title="Add User" data-route="add-user" data-type="url"><i class="fas fa-user-plus"></i></a>
+          </li>
+        </ul>
+      </nav>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#" id="logout-link" title="Logout" data-route="logout" data-type="local"><i class="fas fa-sign-out-alt"></i></a></li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <main class="content-area" id="contentArea">
+      <iframe id="pageFrame" src="about:blank"></iframe>
+      <div id="localContentArea" class="local-content" style="display: none;"></div>
+    </main>
+  </div>
+  
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    // Firebase Configuration (UNCHANGED)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
+      authDomain: "student-database-1882d.firebaseapp.com",
+      databaseURL: "https://student-database-1882d-default-rtdb.firebaseio.com",
+      projectId: "student-database-1882d",
+      storageBucket: "student-database-1882d.firebasestorage.app",
+      messagingSenderId: "420379838808",
+      appId: "1:420379838808:web:bb4206ea2fed40f3907d2d",
+      measurementId: "G-MY77MRJJTM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const loginScreen = document.getElementById("loginScreen");
+    const appContainer = document.getElementById("app");
+    const loginForm = document.getElementById("loginForm");
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const loginError = document.getElementById("loginError");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutLink = document.getElementById("logout-link");
+    
+    // 1 Hour Session Timeout (in milliseconds)
+    const TIMEOUT_DURATION = 3600000; 
+    let sessionTimeoutId;
+
+
+    // ----------------- LOGOUT FUNCTION (FORCED ON RELOAD) -----------------
+    function logoutUser(reason = "Logged out successfully") {
+      console.log("Logout reason: " + reason);
+      localStorage.removeItem("erpUser");
+      localStorage.removeItem("loginTime");
+      clearTimeout(sessionTimeoutId);
+      window.location.reload(); 
+    }
+
+    // ----------------- SESSION TIMEOUT LOGIC -----------------
+    function setupSessionTimeout() {
+        clearTimeout(sessionTimeoutId); 
+        const loginTime = localStorage.getItem("loginTime");
+        if (!loginTime) return;
+        const timeElapsed = Date.now() - parseInt(loginTime);
+        const timeLeft = TIMEOUT_DURATION - timeElapsed;
+
+        if (timeLeft <= 0) {
+            logoutUser("Due to session timeout (1 hour completed)");
+            return;
+        }
+
+        sessionTimeoutId = setTimeout(() => {
+            logoutUser("Due to session timeout (1 hour completed)");
+        }, timeLeft);
+    }
+
+    // ----------------- CHECK AUTH ON LOAD (FORCED LOGOUT ON RELOAD) -----------------
+    function checkAuth() {
+        const user = localStorage.getItem("erpUser");
+        const loginTime = localStorage.getItem("loginTime");
+        
+        if (user && loginTime) {
+            // Check for explicit session timeout
+            const timeElapsed = Date.now() - parseInt(loginTime);
+            if (timeElapsed < TIMEOUT_DURATION) {
+                // If session is still valid, but user reloaded, we force logout as requested.
+                // If this is the *first* load after a successful login, we proceed.
+                if (sessionStorage.getItem('reloaded') === 'true') {
+                    // Page reloaded, force logout.
+                    logoutUser("Forced logout on page reload as requested.");
+                    return;
+                }
+                
+                const parsedUser = JSON.parse(user);
+                // Update login time to "keep alive" the session
+                localStorage.setItem("loginTime", Date.now()); 
+                showApp(parsedUser);
+                sessionStorage.setItem('reloaded', 'true'); // Set flag after first successful entry
+            } else {
+                // Session expired
+                logoutUser("Session expired on load.");
+            }
+        } else {
+            // No user data found
+            loginScreen.style.display = "flex";
+            appContainer.style.display = "none";
+            sessionStorage.removeItem('reloaded');
+        }
+    }
+    window.addEventListener("load", checkAuth);
+
+    // ----------------- LOGIN FUNCTION -----------------
+    async function loginUser(event) {
+      event.preventDefault();
+
+      const phone = phoneInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!phone || !password) {
+        loginError.textContent = "Please enter both phone and password.";
+        return;
+      }
+
+      loginError.textContent = "Checking credentials...";
+      loginBtn.disabled = true;
+
+      try {
+        const usersRef = ref(db, "users");
+        const q = query(usersRef, orderByChild("phone"), equalTo(phone));
+        const snap = await get(q);
+
+        if (!snap.exists()) {
+          loginError.textContent = "User not found.";
+          loginBtn.disabled = false;
+          return;
+        }
+
+        let foundUser = null;
+        let foundUserKey = null;
+        const users = snap.val();
+        for (const key in users) {
+          if (users[key].phone === phone) {
+            foundUser = users[key];
+            foundUserKey = key;
+            break;
+          }
+        }
+
+        if (!foundUser) {
+          loginError.textContent = "Phone number not registered.";
+          loginBtn.disabled = false;
+          return;
+        }
+
+        if (foundUser.isDisabled) {
+            loginError.textContent = "This account has been disabled.";
+            loginBtn.disabled = false;
+            return;
+        }
+
+        if (foundUser.password !== password) {
+          loginError.textContent = "Incorrect password.";
+          loginBtn.disabled = false;
+          return;
+        }
+        
+        const userRole = foundUser.role ? foundUser.role.charAt(0).toUpperCase() + foundUser.role.slice(1) : 'Admin'; 
+
+        // Successful Login: Store data and login time
+        localStorage.setItem("erpUser", JSON.stringify({...foundUser, role: userRole, key: foundUserKey}));
+        localStorage.setItem("loginTime", Date.now()); 
+        sessionStorage.setItem('reloaded', 'false'); // Reset flag on fresh login
+        showApp({...foundUser, role: userRole, key: foundUserKey});
+      } catch (error) {
+        console.error(error);
+        loginError.textContent = "Error: " + error.message;
+      }
+
+      loginBtn.disabled = false;
+    }
+
+    function showApp(user) {
+      loginScreen.style.display = "none";
+      appContainer.style.display = "flex";
+      setupSessionTimeout(); 
+      applyRoleRestrictions(user.role);
+      
+      activateLink("dashboard"); 
+      document.getElementById('sidebar').classList.add('visible');
+      
+      document.querySelectorAll('.submenu').forEach(submenu => {
+        submenu.style.height = '0px';
+      });
+      document.querySelectorAll('.submenu-container').forEach(container => {
+        container.classList.remove('open');
+      });
+    }
+
+    function applyRoleRestrictions(userRole) {
+        const allMenuItems = document.querySelectorAll('.sidebar-nav li');
+        
+        allMenuItems.forEach(item => {
+            const rolesAttribute = item.getAttribute('data-roles');
+            if (rolesAttribute) {
+                const allowedRoles = rolesAttribute.split(',').map(r => r.trim());
+                if (allowedRoles.includes(userRole)) {
+                    item.classList.remove('hidden-by-role');
+                } else {
+                    item.classList.add('hidden-by-role');
+                }
+            }
+        });
+    }
+
+
+    loginForm.addEventListener("submit", loginUser);
+    logoutLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        logoutUser("Manual logout by user");
+    });
+    
+    // ----------------- SHOW PASSWORD TOGGLE -----------------
+    const togglePassword = document.querySelector('#togglePassword');
+    togglePassword.addEventListener('click', function (e) {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+
+  </script>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const pageFrame = document.getElementById("pageFrame");
+    const localContentArea = document.getElementById("localContentArea");
+    const navLinks = document.querySelectorAll(".sidebar-nav a");
+    const hoverArea = document.querySelector(".hover-trigger-area");
+    const submenuContainers = document.querySelectorAll('.submenu-container');
+
+    // Sidebar Toggle Function (Toggles visibility class)
+    sidebarToggle.addEventListener("click", function (event) {
+      sidebar.classList.toggle("visible");
+      event.stopPropagation();
+      
+      if (!sidebar.classList.contains('visible')) {
+           submenuContainers.forEach(container => {
+              toggleSubmenu(container, false);
+          });
+      }
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener("click", function (event) {
+      if (sidebar.classList.contains("visible")) {
+        const isClickInsideSidebar = sidebar.contains(event.target);
+        const isClickOnToggleArea = hoverArea.contains(event.target);
+        if (!isClickInsideSidebar && !isClickOnToggleArea) {
+          sidebar.classList.remove("visible");
+          submenuContainers.forEach(container => {
+              toggleSubmenu(container, false);
+          });
+        }
+      }
+    });
+    
+    // Local content data (Only kept the basic local pages)
+    const localRoutes = {
+      dashboard: "<h1><i class='fas fa-tachometer-alt'></i> Dashboard</h1><p>Welcome to the main system dashboard.</p>",
+      "collect-fee": "<h1>💳 Collect Fee</h1><p>This is the interface for fee collection.</p>",
+      "fee-report": "<h2>💰 Fee Report</h2><p>This is the content for the fee report.</p>",
+      "fee-head": "<h2>🪙 Fee Head Setup</h2><p>This is the page for managing fee categories.</p>",
+      logout: "<h1>Logging out...</h1>"
+    };
+
+
+    function activateLink(route, containerToClose = null) {
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("data-route") === route) {
+          link.classList.add("active");
+        }
+      });
+      
+      const linkElement = document.querySelector(`a[data-route="${route}"]`);
+      
+      if (linkElement && linkElement.getAttribute('data-type') === 'url') {
+          // --- URL/IFRAME Loading ---
+          pageFrame.style.display = "block";
+          localContentArea.style.display = "none";
+          pageFrame.src = linkElement.href;
+      } else if (localRoutes[route]) {
+          // --- Local Content Loading ---
+          pageFrame.style.display = "none";
+          localContentArea.style.display = "block";
+          localContentArea.innerHTML = localRoutes[route];
+      }
+      
+      if (containerToClose) {
+          toggleSubmenu(containerToClose, false);
+      }
+      sidebar.classList.remove('visible');
+    }
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", function (event) {
+        const route = this.getAttribute("data-route");
+        const type = this.getAttribute("data-type");
+        const parentContainer = this.closest('.submenu-container');
+        
+        if (route === 'logout') {
+            return; 
+        }
+
+        event.preventDefault();
+        
+        // Prevent click if the list item is hidden by role
+        if (this.closest('li').classList.contains('hidden-by-role')) {
+            console.warn(`Access denied for route: ${route}`);
+            return;
+        }
+
+        if (type === 'parent-menu') {
+            toggleSubmenu(parentContainer);
+            return;
+        }
+        
+        activateLink(route, parentContainer);
+      });
+    });
+
+    // Submenu Toggle Handler - Opens/Closes the icons
+    function toggleSubmenu(container, forceOpen = null) {
+        const submenu = container.querySelector('.submenu');
+        const isOpen = container.classList.contains('open');
+        
+        if (forceOpen === true && isOpen) return;
+        if (forceOpen === false && !isOpen) return;
+        
+        if (!isOpen) {
+            submenuContainers.forEach(otherContainer => {
+                if (otherContainer !== container && otherContainer.classList.contains('open')) {
+                    toggleSubmenu(otherContainer, false);
+                }
+            });
+        }
+
+        if (isOpen) {
+            submenu.style.height = '0px';
+            container.classList.remove('open');
+        } else {
+            let visibleHeight = 0;
+            const children = submenu.querySelectorAll('li');
+            children.forEach(child => {
+                if (!child.classList.contains('hidden-by-role')) {
+                    visibleHeight += child.offsetHeight;
+                }
+            });
+            
+            submenu.style.height = visibleHeight + 'px';
+            container.classList.add('open');
+        }
+    }
+
+    window.addEventListener("load", function () {
+        document.querySelectorAll('.submenu').forEach(submenu => {
+            submenu.style.height = '0px';
+        });
+    });
+  </script>
 </body>
 </html>
