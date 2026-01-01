@@ -157,34 +157,48 @@
     <aside class="sidebar" id="sidebar">
       <nav class="sidebar-nav">
         <ul>
-          <li id="menu-dashboard" data-roles="Developer,Admin,Clerk,Account,Teacher"><a href="#dashboard" title="Dashboard" data-route="dashboard" data-type="local"><i class="fas fa-tachometer-alt"></i></a></li>
+          <li id="menu-dashboard" data-roles="Developer,Admin,Clerk,Account,Teacher">
+            <a href="#dashboard" title="Dashboard" data-route="dashboard" data-type="local"><i class="fas fa-tachometer-alt"></i></a>
+          </li>
           
           <li class="submenu-container" id="menu-student" data-roles="Developer,Admin,Clerk,Account,Teacher">
-            <a href="#" title="Student" data-route="student-menu" data-type="parent-menu"><i class="fas fa-user-graduate"></i></a>
+            <a href="#" title="Student Management" data-route="student-menu" data-type="parent-menu"><i class="fas fa-user-graduate"></i></a>
             <ul class="submenu">
-              <li id="submenu-add-student" data-roles="Developer,Admin,Clerk,Account"><a href="https://penportindia.github.io/Wings/Student/Student.html" title="Add Student" data-route="add-student" data-type="url"><i class="fas fa-plus-circle"></i></a></li>
-              <li id="submenu-list-student" data-roles="Developer,Admin,Clerk,Account,Teacher"><a href="https://penportindia.github.io/Wings/Student/Studentlist.html" title="Student List" data-route="list" data-type="url"><i class="fas fa-users"></i></a></li>
+              <li id="submenu-new-admission" data-roles="Developer,Admin,Clerk"><a href="https://penportindia.github.io/Wings/Student/Student.html" title="New Admission" data-route="add-student" data-type="url"><i class="fas fa-user-plus"></i></a></li>
+              <li id="submenu-student-list" data-roles="Developer,Admin,Clerk,Teacher"><a href="https://penportindia.github.io/Wings/Student/Studentlist.html" title="Student List" data-route="list" data-type="url"><i class="fas fa-users"></i></a></li>
             </ul>
           </li>
 
-          <li class="submenu-container" id="menu-fee" data-roles="Developer,Admin,Clerk,Account">
-            <a href="#" title="Fee" data-route="fee-menu" data-type="parent-menu"><i class="fas fa-wallet"></i></a>
+          <li class="submenu-container" id="menu-staff" data-roles="Developer,Admin">
+            <a href="#" title="Staff Management" data-route="staff-menu" data-type="parent-menu"><i class="fas fa-chalkboard-teacher"></i></a>
+            <ul class="submenu">
+              <li><a href="#add-staff" title="Add Staff" data-route="add-staff" data-type="local"><i class="fas fa-plus-circle"></i></a></li>
+              <li><a href="#staff-list" title="Staff List" data-route="staff-list" data-type="local"><i class="fas fa-address-book"></i></a></li>
+            </ul>
+          </li>
+
+          <li class="submenu-container" id="menu-accounts" data-roles="Developer,Admin,Account">
+            <a href="#" title="Accounts" data-route="accounts-menu" data-type="parent-menu"><i class="fas fa-wallet"></i></a>
             <ul class="submenu">
               <li><a href="#collectfee" title="Collect Fee" data-route="collect-fee" data-type="local"><i class="fas fa-file-invoice"></i></a></li>
-              <li><a href="#feereport" title="Fee Report" data-route="fee-report" data-type="local"><i class="fas fa-chart-bar"></i></a></li>
+              <li><a href="#fee-overdue" title="Fee Overdue" data-route="fee-overdue" data-type="local"><i class="fas fa-clock"></i></a></li>
+              <li><a href="#demand-slip" title="Demand Slip" data-route="demand-slip" data-type="local"><i class="fas fa-receipt"></i></a></li>
+              <li><a href="#accounts-report" title="Accounts Report" data-route="accounts-report" data-type="local"><i class="fas fa-chart-line"></i></a></li>
+              <li><a href="#day-book" title="Day Book" data-route="day-book" data-type="local"><i class="fas fa-book"></i></a></li>
+              <li><a href="#payroll" title="Payroll" data-route="payroll" data-type="local"><i class="fas fa-money-check-alt"></i></a></li>
             </ul>
           </li>
 
-          <li class="submenu-container" id="menu-setting" data-roles="Developer,Admin,Clerk,Account">
-            <a href="#" title="Setting" data-route="setting-menu" data-type="parent-menu"><i class="fas fa-cog"></i></a>
+          <li class="submenu-container" id="menu-setting" data-roles="Developer,Admin">
+            <a href="#" title="Settings" data-route="setting-menu" data-type="parent-menu"><i class="fas fa-cog"></i></a>
             <ul class="submenu">
-              <li><a href="#feehead" title="Fee Head" data-route="fee-head" data-type="local"><i class="fas fa-rupee-sign"></i></a></li>
+              <li><a href="#feehead" title="Fee Head Setup" data-route="fee-head" data-type="local"><i class="fas fa-rupee-sign"></i></a></li>
+              <li><a href="#bulk-upload" title="Bulk Upload" data-route="bulk-upload" data-type="local"><i class="fas fa-cloud-upload-alt"></i></a></li>
+              <li><a href="#class-progression" title="Class Progression" data-route="class-progression" data-type="local"><i class="fas fa-arrow-up"></i></a></li>
+              <li><a href="https://penportindia.github.io/Wings/User.html" title="User Management" data-route="add-user" data-type="url"><i class="fas fa-users-cog"></i></a></li>
             </ul>
           </li>
 
-          <li id="menu-user-single" data-roles="Developer,Admin">
-            <a href="https://penportindia.github.io/Wings/User.html" title="Add User" data-route="add-user" data-type="url"><i class="fas fa-user-plus"></i></a>
-          </li>
         </ul>
       </nav>
       <nav class="sidebar-nav">
@@ -205,7 +219,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Firebase Configuration (UNCHANGED)
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
       authDomain: "student-database-1882d.firebaseapp.com",
@@ -229,21 +243,16 @@
     const loginBtn = document.getElementById("loginBtn");
     const logoutLink = document.getElementById("logout-link");
     
-    // 1 Hour Session Timeout (in milliseconds)
     const TIMEOUT_DURATION = 3600000; 
     let sessionTimeoutId;
 
-
-    // ----------------- LOGOUT FUNCTION (FORCED ON RELOAD) -----------------
     function logoutUser(reason = "Logged out successfully") {
-      console.log("Logout reason: " + reason);
       localStorage.removeItem("erpUser");
       localStorage.removeItem("loginTime");
       clearTimeout(sessionTimeoutId);
       window.location.reload(); 
     }
 
-    // ----------------- SESSION TIMEOUT LOGIC -----------------
     function setupSessionTimeout() {
         clearTimeout(sessionTimeoutId); 
         const loginTime = localStorage.getItem("loginTime");
@@ -252,43 +261,34 @@
         const timeLeft = TIMEOUT_DURATION - timeElapsed;
 
         if (timeLeft <= 0) {
-            logoutUser("Due to session timeout (1 hour completed)");
+            logoutUser("Due to session timeout");
             return;
         }
 
         sessionTimeoutId = setTimeout(() => {
-            logoutUser("Due to session timeout (1 hour completed)");
+            logoutUser("Due to session timeout");
         }, timeLeft);
     }
 
-    // ----------------- CHECK AUTH ON LOAD (FORCED LOGOUT ON RELOAD) -----------------
     function checkAuth() {
         const user = localStorage.getItem("erpUser");
         const loginTime = localStorage.getItem("loginTime");
         
         if (user && loginTime) {
-            // Check for explicit session timeout
             const timeElapsed = Date.now() - parseInt(loginTime);
             if (timeElapsed < TIMEOUT_DURATION) {
-                // If session is still valid, but user reloaded, we force logout as requested.
-                // If this is the *first* load after a successful login, we proceed.
                 if (sessionStorage.getItem('reloaded') === 'true') {
-                    // Page reloaded, force logout.
-                    logoutUser("Forced logout on page reload as requested.");
+                    logoutUser("Forced logout on page reload");
                     return;
                 }
-                
                 const parsedUser = JSON.parse(user);
-                // Update login time to "keep alive" the session
                 localStorage.setItem("loginTime", Date.now()); 
                 showApp(parsedUser);
-                sessionStorage.setItem('reloaded', 'true'); // Set flag after first successful entry
+                sessionStorage.setItem('reloaded', 'true');
             } else {
-                // Session expired
-                logoutUser("Session expired on load.");
+                logoutUser("Session expired");
             }
         } else {
-            // No user data found
             loginScreen.style.display = "flex";
             appContainer.style.display = "none";
             sessionStorage.removeItem('reloaded');
@@ -296,10 +296,8 @@
     }
     window.addEventListener("load", checkAuth);
 
-    // ----------------- LOGIN FUNCTION -----------------
     async function loginUser(event) {
       event.preventDefault();
-
       const phone = phoneInput.value.trim();
       const password = passwordInput.value.trim();
 
@@ -333,36 +331,21 @@
           }
         }
 
-        if (!foundUser) {
-          loginError.textContent = "Phone number not registered.";
+        if (!foundUser || foundUser.isDisabled || foundUser.password !== password) {
+          loginError.textContent = "Invalid credentials or account disabled.";
           loginBtn.disabled = false;
           return;
         }
 
-        if (foundUser.isDisabled) {
-            loginError.textContent = "This account has been disabled.";
-            loginBtn.disabled = false;
-            return;
-        }
-
-        if (foundUser.password !== password) {
-          loginError.textContent = "Incorrect password.";
-          loginBtn.disabled = false;
-          return;
-        }
-        
         const userRole = foundUser.role ? foundUser.role.charAt(0).toUpperCase() + foundUser.role.slice(1) : 'Admin'; 
 
-        // Successful Login: Store data and login time
         localStorage.setItem("erpUser", JSON.stringify({...foundUser, role: userRole, key: foundUserKey}));
         localStorage.setItem("loginTime", Date.now()); 
-        sessionStorage.setItem('reloaded', 'false'); // Reset flag on fresh login
+        sessionStorage.setItem('reloaded', 'false');
         showApp({...foundUser, role: userRole, key: foundUserKey});
       } catch (error) {
-        console.error(error);
         loginError.textContent = "Error: " + error.message;
       }
-
       loginBtn.disabled = false;
     }
 
@@ -371,21 +354,12 @@
       appContainer.style.display = "flex";
       setupSessionTimeout(); 
       applyRoleRestrictions(user.role);
-      
       activateLink("dashboard"); 
       document.getElementById('sidebar').classList.add('visible');
-      
-      document.querySelectorAll('.submenu').forEach(submenu => {
-        submenu.style.height = '0px';
-      });
-      document.querySelectorAll('.submenu-container').forEach(container => {
-        container.classList.remove('open');
-      });
     }
 
     function applyRoleRestrictions(userRole) {
         const allMenuItems = document.querySelectorAll('.sidebar-nav li');
-        
         allMenuItems.forEach(item => {
             const rolesAttribute = item.getAttribute('data-roles');
             if (rolesAttribute) {
@@ -399,14 +373,12 @@
         });
     }
 
-
     loginForm.addEventListener("submit", loginUser);
     logoutLink.addEventListener("click", (e) => {
         e.preventDefault();
-        logoutUser("Manual logout by user");
+        logoutUser();
     });
     
-    // ----------------- SHOW PASSWORD TOGGLE -----------------
     const togglePassword = document.querySelector('#togglePassword');
     togglePassword.addEventListener('click', function (e) {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -414,7 +386,6 @@
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
     });
-
   </script>
 
   <script>
@@ -426,67 +397,56 @@
     const hoverArea = document.querySelector(".hover-trigger-area");
     const submenuContainers = document.querySelectorAll('.submenu-container');
 
-    // Sidebar Toggle Function (Toggles visibility class)
     sidebarToggle.addEventListener("click", function (event) {
       sidebar.classList.toggle("visible");
       event.stopPropagation();
-      
       if (!sidebar.classList.contains('visible')) {
-           submenuContainers.forEach(container => {
-              toggleSubmenu(container, false);
-          });
+           submenuContainers.forEach(container => toggleSubmenu(container, false));
       }
     });
 
-    // Close sidebar when clicking outside
     document.addEventListener("click", function (event) {
       if (sidebar.classList.contains("visible")) {
-        const isClickInsideSidebar = sidebar.contains(event.target);
-        const isClickOnToggleArea = hoverArea.contains(event.target);
-        if (!isClickInsideSidebar && !isClickOnToggleArea) {
+        if (!sidebar.contains(event.target) && !hoverArea.contains(event.target)) {
           sidebar.classList.remove("visible");
-          submenuContainers.forEach(container => {
-              toggleSubmenu(container, false);
-          });
+          submenuContainers.forEach(container => toggleSubmenu(container, false));
         }
       }
     });
     
-    // Local content data (Only kept the basic local pages)
     const localRoutes = {
       dashboard: "<h1><i class='fas fa-tachometer-alt'></i> Dashboard</h1><p>Welcome to the main system dashboard.</p>",
-      "collect-fee": "<h1>💳 Collect Fee</h1><p>This is the interface for fee collection.</p>",
-      "fee-report": "<h2>💰 Fee Report</h2><p>This is the content for the fee report.</p>",
-      "fee-head": "<h2>🪙 Fee Head Setup</h2><p>This is the page for managing fee categories.</p>",
+      "add-staff": "<h1>Add Staff</h1><p>Module to add new staff members.</p>",
+      "staff-list": "<h1>Staff List</h1><p>List of all registered staff.</p>",
+      "collect-fee": "<h1>Collect Fee</h1><p>Interface for fee collection.</p>",
+      "fee-overdue": "<h1>Fee Overdue</h1><p>Report for overdue fees.</p>",
+      "demand-slip": "<h1>Demand Slip</h1><p>Generate demand slips here.</p>",
+      "accounts-report": "<h1>Accounts Report</h1><p>Financial overview.</p>",
+      "day-book": "<h1>Day Book</h1><p>Daily transaction records.</p>",
+      "payroll": "<h1>Payroll</h1><p>Manage staff salaries.</p>",
+      "fee-head": "<h1>Fee Head Setup</h1><p>Manage fee categories.</p>",
+      "bulk-upload": "<h1>Bulk Upload</h1><p>Upload mass data via CSV.</p>",
+      "class-progression": "<h1>Class Progression</h1><p>Promote students to next class.</p>",
       logout: "<h1>Logging out...</h1>"
     };
-
 
     function activateLink(route, containerToClose = null) {
       navLinks.forEach((link) => {
         link.classList.remove("active");
-        if (link.getAttribute("data-route") === route) {
-          link.classList.add("active");
-        }
+        if (link.getAttribute("data-route") === route) link.classList.add("active");
       });
       
       const linkElement = document.querySelector(`a[data-route="${route}"]`);
-      
       if (linkElement && linkElement.getAttribute('data-type') === 'url') {
-          // --- URL/IFRAME Loading ---
           pageFrame.style.display = "block";
           localContentArea.style.display = "none";
           pageFrame.src = linkElement.href;
       } else if (localRoutes[route]) {
-          // --- Local Content Loading ---
           pageFrame.style.display = "none";
           localContentArea.style.display = "block";
           localContentArea.innerHTML = localRoutes[route];
       }
-      
-      if (containerToClose) {
-          toggleSubmenu(containerToClose, false);
-      }
+      if (containerToClose) toggleSubmenu(containerToClose, false);
       sidebar.classList.remove('visible');
     }
 
@@ -495,66 +455,37 @@
         const route = this.getAttribute("data-route");
         const type = this.getAttribute("data-type");
         const parentContainer = this.closest('.submenu-container');
-        
-        if (route === 'logout') {
-            return; 
-        }
-
+        if (route === 'logout') return; 
         event.preventDefault();
-        
-        // Prevent click if the list item is hidden by role
-        if (this.closest('li').classList.contains('hidden-by-role')) {
-            console.warn(`Access denied for route: ${route}`);
-            return;
-        }
-
+        if (this.closest('li').classList.contains('hidden-by-role')) return;
         if (type === 'parent-menu') {
             toggleSubmenu(parentContainer);
             return;
         }
-        
         activateLink(route, parentContainer);
       });
     });
 
-    // Submenu Toggle Handler - Opens/Closes the icons
     function toggleSubmenu(container, forceOpen = null) {
         const submenu = container.querySelector('.submenu');
         const isOpen = container.classList.contains('open');
-        
         if (forceOpen === true && isOpen) return;
         if (forceOpen === false && !isOpen) return;
-        
         if (!isOpen) {
-            submenuContainers.forEach(otherContainer => {
-                if (otherContainer !== container && otherContainer.classList.contains('open')) {
-                    toggleSubmenu(otherContainer, false);
-                }
+            submenuContainers.forEach(other => {
+                if (other !== container && other.classList.contains('open')) toggleSubmenu(other, false);
             });
         }
-
         if (isOpen) {
             submenu.style.height = '0px';
             container.classList.remove('open');
         } else {
-            let visibleHeight = 0;
-            const children = submenu.querySelectorAll('li');
-            children.forEach(child => {
-                if (!child.classList.contains('hidden-by-role')) {
-                    visibleHeight += child.offsetHeight;
-                }
-            });
-            
-            submenu.style.height = visibleHeight + 'px';
+            let h = 0;
+            submenu.querySelectorAll('li').forEach(c => { if (!c.classList.contains('hidden-by-role')) h += 40; }); // approximation
+            submenu.style.height = h + 'px';
             container.classList.add('open');
         }
     }
-
-    window.addEventListener("load", function () {
-        document.querySelectorAll('.submenu').forEach(submenu => {
-            submenu.style.height = '0px';
-        });
-    });
   </script>
 </body>
 </html>
