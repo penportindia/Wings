@@ -83,8 +83,8 @@
                             <th class="py-4 px-6">Academic Info</th>
                             <th class="py-4 px-6">Father Details</th>
                             <th class="py-4 px-6">Mother Details</th>
-                            <th class="py-4 px-6 bg-blue-900/40">UDISE Gov Mapping</th>
-                            <th class="py-4 px-6 bg-emerald-900/40">E-Shikshakosh Mapping</th>
+                            <th class="py-4 px-6 bg-blue-900/40">UDISE Gov </th>
+                            <th class="py-4 px-6 bg-emerald-900/40">E-Shikshakosh </th>
                             <th class="py-4 px-6">Primary Phone</th>
                             <th class="py-4 px-6">Bank Details</th>
                             <th class="py-4 px-6">Full Address</th>
@@ -213,7 +213,7 @@
                         <div class="text-[9px] text-gray-400 font-bold uppercase mt-1">${s.profile?.gender || '-'} | ${s.profile?.dob || '-'} | ${s.profile?.category || '-'}</div>
                     </td>
                     <td class="py-4 px-6">
-                        <div class="font-bold text-gray-700 uppercase tracking-tighter text-[13px]">CL ${s.academic?.class || '-'}-${s.academic?.section || '-'}</div>
+                        <div class="font-bold text-gray-700 uppercase tracking-tighter text-[13px]">${s.academic?.class || '-'}-${s.academic?.section || '-'}</div>
                         <div class="text-[10px] text-gray-400 font-bold uppercase">${s.academic?.branch || '-'}</div>
                         <div class="text-[10px] text-indigo-500 font-bold italic">${s.academic?.session || '-'}</div>
                     </td>
@@ -223,14 +223,14 @@
                     <td class="py-4 px-6 bg-blue-50/30">
                         <div class="font-bold text-blue-800 text-[11px] uppercase">${s.govtMapping?.udise?.udiseName || '-'}</div>
                         <div class="text-[9px] font-bold text-gray-600">PEN: ${s.govtMapping?.udise?.penNo || '-'}</div>
-                        <div class="text-[9px] text-gray-500 italic leading-none">APAAR: ${s.govtMapping?.udise?.aapaarId || '-'}</div>
-                        <div class="text-[9px] text-blue-500 font-bold">MAP: ${s.govtMapping?.udise?.uClass || '-'}/${s.govtMapping?.udise?.uSection || '-'}</div>
+                        <div class="text-[9px] text-gray-500 leading-none">APAAR: ${s.govtMapping?.udise?.aapaarId || '-'}</div>
+                        <div class="text-[9px] text-blue-500 font-bold">BLOCK: ${s.govtMapping?.udise?.uSection || '-'} | ${s.govtMapping?.udise?.uClass || '-'}</div>
                     </td>
 
                     <td class="py-4 px-6 bg-emerald-50/30">
                         <div class="font-bold text-emerald-700 uppercase text-[11px]">${s.govtMapping?.eshikshakosh?.eshikshaName || '-'}</div>
                         <div class="text-[9px] font-bold text-gray-600">STATE NO: ${s.govtMapping?.eshikshakosh?.stateNo || '-'}</div>
-                        <div class="text-[9px] text-emerald-600 italic font-bold uppercase">BLOCK: ${s.govtMapping?.eshikshakosh?.eBlock || '-'} | CL: ${s.govtMapping?.eshikshakosh?.eClass || '-'}</div>
+                        <div class="text-[9px] text-emerald-600 font-bold uppercase">BLOCK: ${s.govtMapping?.eshikshakosh?.eBlock || '-'} | ${s.govtMapping?.eshikshakosh?.eClass || '-'}</div>
                     </td>
 
                     <td class="py-4 px-6">
