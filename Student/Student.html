@@ -310,27 +310,32 @@
 
 <script>
 const firebaseConfig = {
-    apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
-    authDomain: "student-database-1882d.firebaseapp.com",
-    databaseURL: "https://student-database-1882d-default-rtdb.firebaseio.com",
-    projectId: "student-database-1882d",
-    storageBucket: "student-database-1882d.firebasestorage.app",
-    messagingSenderId: "420379838808",
-    appId: "1:420379838808:web:bb4206ea2fed40f3907d2d"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-let foundationData = {};
+    apiKey: "VITE_FIREBASE_API_KEY",
+    authDomain: "VITE_FIREBASE_AUTH_DOMAIN",
+    databaseURL: "VITE_FIREBASE_DB_URL",
+    projectId: "VITE_FIREBASE_PROJECT_ID",
+    storageBucket: "VITE_FIREBASE_STORAGE_BUCKET",
+    messagingSenderId: "VITE_FIREBASE_MESSAGING_ID",
+    appId: "VITE_FIREBASE_APP_ID"
+  };
 
-const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
-const setV = (id, val) => {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  let foundationData = {};
+    
+  const _mediaBase = "VITE_CLOUDINARY_CLOUD_NAME";
+  const _uploadRef = "VITE_CLOUDINARY_UPLOAD_PRESET";
+
+  // Helpers (Aapka logic)
+  const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
+  const setV = (id, val) => {
     document.getElementById(id).value = (val !== undefined && val !== null && val !== "") ? val : '';
-};
+  };
 
-const msg = (m, c="#0f172a") => { 
+  const msg = (m, c="#0f172a") => { 
     const t=document.getElementById('toast'); t.innerText=m; t.style.background=c; 
     t.style.display='block'; setTimeout(()=>t.style.display='none',3000); 
-};
+  };
 
 function setUpdateMode(isUpdate) {
     const btn = document.getElementById('saveBtn');
@@ -636,3 +641,4 @@ init();
 </script>
 </body>
 </html>
+
