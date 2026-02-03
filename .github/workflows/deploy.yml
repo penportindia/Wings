@@ -1,0 +1,28 @@
+name: Production Multi-Module Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Inject All Secrets into HTML Files
+        run: |
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_API_KEY|${{ secrets.VITE_FIREBASE_API_KEY }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_AUTH_DOMAIN|${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_DB_URL|${{ secrets.VITE_FIREBASE_DB_URL }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_PROJECT_ID|${{ secrets.VITE_FIREBASE_PROJECT_ID }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_STORAGE_BUCKET|${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_MESSAGING_ID|${{ secrets.VITE_FIREBASE_MESSAGING_ID }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_FIREBASE_APP_ID|${{ secrets.VITE_FIREBASE_APP_ID }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_CLOUDINARY_CLOUD_NAME|${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}|g" {} +
+          find . -name "*.html" -type f -exec sed -i "s|VITE_CLOUDINARY_UPLOAD_PRESET|${{ secrets.VITE_CLOUDINARY_UPLOAD_PRESET }}|g" {} +
+
+      - name: Production Deployment
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+          branch: gh-pages
