@@ -13,19 +13,19 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Inject Secrets into Student Folder
+      - name: Inject Secrets (Deep Scan)
         run: |
-          # Hum Student folder ke andar ki files ko target kar rahe hain
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_AUTH_DOMAIN#${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_DB_URL#${{ secrets.VITE_FIREBASE_DB_URL }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_PROJECT_ID#${{ secrets.VITE_FIREBASE_PROJECT_ID }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_STORAGE_BUCKET#${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_MESSAGING_ID#${{ secrets.VITE_FIREBASE_MESSAGING_ID }}#g" {} +
-          find Student/ -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" {} +
+          # Ye command poori repository mein jahan bhi .html hai, usme secrets bhar degi
+          find . -name "*.html" -type f -print -exec sed -i "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_AUTH_DOMAIN#${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_DB_URL#${{ secrets.VITE_FIREBASE_DB_URL }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_PROJECT_ID#${{ secrets.VITE_FIREBASE_PROJECT_ID }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_STORAGE_BUCKET#${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_MESSAGING_ID#${{ secrets.VITE_FIREBASE_MESSAGING_ID }}#g" {} +
+          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" {} +
 
       - name: Production Deployment
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: Student  # Ye 'Student' folder ke saare maal ko gh-pages branch ke root mein daal dega
+          folder: .  # Puri repo deploy karo taaki path ka koi chakkar hi na rahe
           branch: gh-pages
