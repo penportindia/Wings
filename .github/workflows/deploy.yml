@@ -1,7 +1,9 @@
 name: Production Multi-Module Deploy
+
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -9,23 +11,36 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Inject Secrets (Deep Scan)
+      - name: Create Deploy Directory (Safe Copy)
         run: |
-          # Ye command poori repository mein jahan bhi .html hai, usme secrets bhar degi
-          find . -name "*.html" -type f -print -exec sed -i "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_AUTH_DOMAIN#${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_DB_URL#${{ secrets.VITE_FIREBASE_DB_URL }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_PROJECT_ID#${{ secrets.VITE_FIREBASE_PROJECT_ID }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_STORAGE_BUCKET#${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_MESSAGING_ID#${{ secrets.VITE_FIREBASE_MESSAGING_ID }}#g" {} +
-          find . -name "*.html" -type f -exec sed -i "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" {} +
+          mkdir -p deploy_build
+          rsync -av --exclude='.git' . deploy_build/
+
+      - name: Inject Secrets (Targeted File)
+        working-directory: deploy_build
+        run: |
+          FILE="Student/Student.html"
+
+          sed -i \
+            -e "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" \
+            -e "s#VITE_FIREBASE_AUTH_DOMAIN#${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}#g" \
+            -e "s#VITE_FIREBASE_DB_URL#${{ secrets.VITE_FIREBASE_DB_URL }}#g" \
+            -e "s#VITE_FIREBASE_PROJECT_ID#${{ secrets.VITE_FIREBASE_PROJECT_ID }}#g" \
+            -e "s#VITE_FIREBASE_STORAGE_BUCKET#${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}#g" \
+            -e "s#VITE_FIREBASE_MESSAGING_ID#${{ secrets.VITE_FIREBASE_MESSAGING_ID }}#g" \
+            -e "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" \
+            "$FILE"
 
       - name: Production Deployment
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: .  # Puri repo deploy karo taaki path ka koi chakkar hi na rahe
+          folder: deploy_build
           branch: gh-pages
+          clean: true
