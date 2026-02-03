@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Student Database - Professional ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; padding: 15px; width: 100%; }
+        .custom-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 10px; }
+        .erp-container { width: 100%; max-width: 100%; }
+        /* Chote Select Box ke liye custom CSS */
+        .compact-select { width: 110px !important; }
+    </style>
+</head>
+<body class="bg-[#f8fafc]">
+
+    <div class="erp-container">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+            <div class="flex flex-wrap items-end gap-4">
+                
+                <div class="flex-1 min-w-[300px]">
+                    <label class="block text-[10px] font-bold text-indigo-400 uppercase mb-1 ml-1">Universal Search</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="universalSearch" onkeyup="handleEnter(event)" placeholder="Name, Folio, Phone..." class="w-full bg-gray-50 border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500 rounded-lg py-2 px-4 text-sm outline-none transition-all">
+                        <button onclick="firstPageSearch()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button onclick="resetFilters()" class="bg-gray-100 text-gray-400 px-4 py-2 rounded-lg hover:bg-red-500 hover:text-white">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 items-end">
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">Branch</label>
+                        <select id="selBranch" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none"></select>
+                    </div>
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">Class</label>
+                        <select id="selClass" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none"></select>
+                    </div>
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">Section</label>
+                        <select id="selSection" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none"></select>
+                    </div>
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">RTE Year</label>
+                        <select id="selRte" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none"></select>
+                    </div>
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">Transport</label>
+                        <select id="selTrans" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none">
+                            <option value="">All</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="compact-select">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase ml-1">Type</label>
+                        <select id="selType" class="w-full bg-gray-50 ring-1 ring-gray-200 rounded-lg p-2 text-[11px] font-semibold outline-none"></select>
+                    </div>
+
+                    <button onclick="exportFullData()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-emerald-700 shadow-md flex items-center gap-2 h-[38px]">
+                        <i class="fas fa-file-export"></i> EXPORT
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse min-w-[4500px]">
+                    <thead class="bg-indigo-900 text-white/90 text-[11px] uppercase tracking-wider">
+                        <tr>
+                            <th class="py-4 px-6">Folio, Type & RTE</th>
+                            <th class="py-4 px-6">Student Profile</th>
+                            <th class="py-4 px-6">Academic Info</th>
+                            <th class="py-4 px-6">Father Details</th>
+                            <th class="py-4 px-6">Mother Details</th>
+                            <th class="py-4 px-6 bg-blue-900/40">UDISE Gov </th>
+                            <th class="py-4 px-6 bg-emerald-900/40">E-Shikshakosh </th>
+                            <th class="py-4 px-6">Primary Phone</th>
+                            <th class="py-4 px-6">Bank Details</th>
+                            <th class="py-4 px-6">Full Address</th>
+                            <th class="py-4 px-6">Transport</th>
+                            <th class="py-4 px-6">Status & Remarks</th>
+                            <th class="py-4 px-6 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultBody" class="text-[12px] divide-y divide-gray-50">
+                        <tr><td colspan="13" class="p-32 text-center text-gray-300 font-bold uppercase tracking-widest">Loading Database...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                <div id="footerCount" class="text-[11px] font-black text-indigo-900 uppercase">System Ready</div>
+                <div class="flex gap-2" id="paginationControls"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
+            authDomain: "student-database-1882d.firebaseapp.com",
+            databaseURL: "https://student-database-1882d-default-rtdb.firebaseio.com",
+            projectId: "student-database-1882d",
+            storageBucket: "student-database-1882d.firebasestorage.app",
+            messagingSenderId: "420379838808",
+            appId: "1:420379838808:web:bb4206ea2fed40f3907d2d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const pageSize = 30;
+
+        window.handleEnter = (e) => { if (e.key === 'Enter') firstPageSearch(); };
+
+        onValue(ref(db, 'student'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                allData = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+                populateDropdowns(allData);
+                firstPageSearch(); 
+            }
+        }, { onlyOnce: true });
+
+        function populateDropdowns(data) {
+            const sets = { branch: new Set(), class: new Set(), section: new Set(), type: new Set(), rte: new Set() };
+            data.forEach(s => {
+                if(s.academic?.branch) sets.branch.add(s.academic.branch);
+                if(s.academic?.class) sets.class.add(s.academic.class);
+                if(s.academic?.section) sets.section.add(s.academic.section);
+                if(s.admission?.type) sets.type.add(s.admission.type);
+                if(s.admission?.rteYear) sets.rte.add(s.admission.rteYear);
+            });
+            const fill = (id, set) => {
+                const el = document.getElementById(id);
+                el.innerHTML = '<option value="">All</option>';
+                Array.from(set).sort().forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+            };
+            Object.keys(sets).forEach(key => fill('sel' + key.charAt(0).toUpperCase() + key.slice(1), sets[key]));
+        }
+
+        window.firstPageSearch = () => { currentPage = 1; applySearch(); };
+
+        window.applySearch = function() {
+            const query = document.getElementById('universalSearch').value.toLowerCase();
+            const f = {
+                branch: document.getElementById('selBranch').value,
+                class: document.getElementById('selClass').value,
+                section: document.getElementById('selSection').value,
+                type: document.getElementById('selType').value,
+                rte: document.getElementById('selRte').value,
+                trans: document.getElementById('selTrans').value
+            };
+
+            filteredData = allData.filter(s => {
+                const matchesSearch = !query || 
+                    s.profile?.studentName?.toLowerCase().includes(query) ||
+                    s.profile?.folio?.includes(query) ||
+                    s.parents?.father?.name?.toLowerCase().includes(query) ||
+                    s.contact?.phone1?.includes(query);
+
+                const matchesFilters = (!f.branch || s.academic?.branch === f.branch) &&
+                    (!f.class || s.academic?.class === f.class) &&
+                    (!f.section || s.academic?.section === f.section) &&
+                    (!f.type || s.admission?.type === f.type) &&
+                    (!f.rte || s.admission?.rteYear === f.rte) &&
+                    (!f.trans || String(s.transport?.enabled) === f.trans);
+
+                return matchesSearch && matchesFilters;
+            });
+
+            renderTable();
+            renderPagination();
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('resultBody');
+            const start = (currentPage - 1) * pageSize;
+            const paginatedItems = filteredData.slice(start, start + pageSize);
+            document.getElementById('footerCount').innerText = `TOTAL RECORDS: ${filteredData.length}`;
+
+            if(paginatedItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="13" class="p-20 text-center text-gray-400 font-bold uppercase">No records found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = paginatedItems.map(s => `
+                <tr class="hover:bg-indigo-50/50 border-b border-gray-50">
+                    <td class="py-4 px-6">
+                        <div class="font-800 text-indigo-900 text-sm">#${s.profile?.folio || '-'}</div>
+                        <div class="text-[9px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">${s.admission?.type || '-'}</div>
+                        <div class="text-[10px] text-indigo-500 font-bold block mt-1 uppercase">${s.admission?.rteYear || ''}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-gray-800 uppercase text-[13px]">${s.profile?.studentName || '-'}</div>
+                        <div class="text-[10px] text-indigo-600 font-bold">UID: ${s.profile?.aadhaar || '-'}</div>
+                        <div class="text-[9px] text-gray-400 font-bold uppercase mt-1">${s.profile?.gender || '-'} | ${s.profile?.dob || '-'} | ${s.profile?.category || '-'}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-gray-700 uppercase tracking-tighter text-[13px]">${s.academic?.class || '-'}-${s.academic?.section || '-'}</div>
+                        <div class="text-[10px] text-gray-400 font-bold uppercase">${s.academic?.branch || '-'}</div>
+                        <div class="text-[10px] text-indigo-500 font-bold italic">${s.academic?.session || '-'}</div>
+                    </td>
+                    <td class="py-4 px-6 uppercase leading-tight"><div class="font-semibold text-gray-700">${s.parents?.father?.name || '-'}</div><div class="text-[9px] text-gray-400">UID: ${s.parents?.father?.aadhaar || '-'}</div></td>
+                    <td class="py-4 px-6 uppercase leading-tight"><div class="font-semibold text-gray-700">${s.parents?.mother?.name || '-'}</div><div class="text-[9px] text-gray-400">UID: ${s.parents?.mother?.aadhaar || '-'}</div></td>
+                    
+                    <td class="py-4 px-6 bg-blue-50/30">
+                        <div class="font-bold text-blue-800 text-[11px] uppercase">${s.govtMapping?.udise?.udiseName || '-'}</div>
+                        <div class="text-[9px] font-bold text-gray-600">PEN: ${s.govtMapping?.udise?.penNo || '-'}</div>
+                        <div class="text-[9px] text-gray-500 leading-none">APAAR: ${s.govtMapping?.udise?.aapaarId || '-'}</div>
+                        <div class="text-[9px] text-blue-500 font-bold">BLOCK: ${s.govtMapping?.udise?.uSection || '-'} | ${s.govtMapping?.udise?.uClass || '-'}</div>
+                    </td>
+
+                    <td class="py-4 px-6 bg-emerald-50/30">
+                        <div class="font-bold text-emerald-700 uppercase text-[11px]">${s.govtMapping?.eshikshakosh?.eshikshaName || '-'}</div>
+                        <div class="text-[9px] font-bold text-gray-600">STATE NO: ${s.govtMapping?.eshikshakosh?.stateNo || '-'}</div>
+                        <div class="text-[9px] text-emerald-600 font-bold uppercase">BLOCK: ${s.govtMapping?.eshikshakosh?.eBlock || '-'} | ${s.govtMapping?.eshikshakosh?.eClass || '-'}</div>
+                    </td>
+
+                    <td class="py-4 px-6">
+                        <div class="text-indigo-600 font-800 text-[13px] bg-indigo-50 px-2 py-1 rounded-lg inline-block border border-indigo-100">
+                           <i class="fas fa-phone-alt mr-1"></i> ${s.contact?.phone1 || '-'}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 uppercase leading-tight">
+                        <div class="text-gray-700 font-bold text-[10px]">${s.bank?.accountHolder || '-'}</div>
+                        <div class="text-gray-500 text-[10px]">A/C: ${s.bank?.accountNo || '-'}</div>
+                        <div class="text-indigo-400 text-[9px] font-bold">IFSC: ${s.bank?.ifsc || '-'}</div>
+                    </td>
+                    <td class="py-4 px-6"><div class="text-[10px] text-gray-600 uppercase w-72 whitespace-normal bg-gray-50 p-2 rounded border border-gray-100 italic">${s.contact?.address || '-'}</div></td>
+                    <td class="py-4 px-6">
+                        <div class="text-blue-600 font-bold text-[10px]">ROUTE: ${s.transport?.route || 'SELF'}</div>
+                        <div class="text-[9px] text-gray-500 font-bold uppercase">${s.transport?.stop || ''}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-bold text-emerald-600 uppercase text-[10px] mb-1 tracking-widest">${s.remark?.status || '-'}</div>
+                        <div class="text-[10px] text-gray-400 italic line-clamp-2 w-48">${s.remark?.note || ''}</div>
+                    </td>
+                    <td class="py-4 px-6 text-center"><button onclick="editStudent('${s.profile?.folio}')" class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"><i class="fas fa-edit"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        window.exportFullData = function() {
+            if (filteredData.length === 0) { alert("Pehle data search karein!"); return; }
+            const headers = [
+                "Folio", "Student Name", "Aadhaar", "DOB", "Gender", "Category", 
+                "Branch", "Class", "Section", "Session", "Type", "RTE Year",
+                "Father", "Father Aadhaar", "Mother", "Mother Aadhaar",
+                "UDISE Name", "PEN No", "APAAR ID", "U-Class", "U-Section",
+                "E-Shiksha Name", "State No", "E-Block", "E-Class",
+                "Phone1", "Phone2", "Address", "Transport Status", "Route", "Stop",
+                "Bank Holder", "Bank A/C", "IFSC", "Status", "Note"
+            ];
+
+            const csvRows = [headers.join(",")];
+            filteredData.forEach(s => {
+                const row = [
+                    s.profile?.folio || "-", `"${s.profile?.studentName}"`, `'${s.profile?.aadhaar}`, s.profile?.dob, s.profile?.gender, s.profile?.category,
+                    s.academic?.branch, s.academic?.class, s.academic?.section, s.academic?.session, s.admission?.type, s.admission?.rteYear,
+                    `"${s.parents?.father?.name}"`, `'${s.parents?.father?.aadhaar}`, `"${s.parents?.mother?.name}"`, `'${s.parents?.mother?.aadhaar}`,
+                    `"${s.govtMapping?.udise?.udiseName}"`, s.govtMapping?.udise?.penNo || "-", s.govtMapping?.udise?.aapaarId || "-", s.govtMapping?.udise?.uClass, s.govtMapping?.udise?.uSection,
+                    `"${s.govtMapping?.eshikshakosh?.eshikshaName}"`, `'${s.govtMapping?.eshikshakosh?.stateNo}`, s.govtMapping?.eshikshakosh?.eBlock, s.govtMapping?.eshikshakosh?.eClass,
+                    s.contact?.phone1, s.contact?.phone2, `"${(s.contact?.address || "").replace(/"/g, '""')}"`,
+                    s.transport?.enabled ? "Active" : "Inactive", s.transport?.route || "-", s.transport?.stop || "-",
+                    `"${s.bank?.accountHolder || ""}"`, `'${s.bank?.accountNo || ""}`, s.bank?.ifsc || "-",
+                    s.remark?.status || "-", `"${(s.remark?.note || "").replace(/"/g, '""')}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+
+            const blob = new Blob([csvRows.join("\n")], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `School_Export_${new Date().toLocaleDateString()}.csv`);
+            link.click();
+        };
+
+        function renderPagination() {
+            const controls = document.getElementById('paginationControls');
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            controls.innerHTML = '';
+            if (totalPages <= 1) return;
+            const btn = (icon, onClick) => {
+                const b = document.createElement('button');
+                b.className = "px-4 py-2 rounded-lg bg-white border text-gray-600 font-bold hover:bg-indigo-50 shadow-sm";
+                b.innerHTML = icon; b.onclick = onClick; return b;
+            };
+            if (currentPage > 1) controls.appendChild(btn("<i class='fas fa-chevron-left'></i>", () => { currentPage--; renderTable(); renderPagination(); }));
+            const s = document.createElement('span');
+            s.className = "px-6 py-2 text-xs font-black text-indigo-600 bg-indigo-50 rounded-lg flex items-center";
+            s.innerText = `${currentPage} / ${totalPages}`;
+            controls.appendChild(s);
+            if (currentPage < totalPages) controls.appendChild(btn("<i class='fas fa-chevron-right'></i>", () => { currentPage++; renderTable(); renderPagination(); }));
+        }
+
+        window.resetFilters = () => location.reload();
+        window.editStudent = (f) => f && (window.location.href = `student.html?folio=${f}`);
+    </script>
+</body>
+</html>

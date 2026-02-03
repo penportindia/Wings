@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro-Level School ERP | Student Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script> 
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --update: #f59e0b;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-dark); 
+            margin: 0; 
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* Professional Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .container { max-width: 1550px; margin: 0 auto; padding: 20px; }
+
+        /* Header UI */
+        .top-nav {
+            background: var(--primary);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .brand { display: flex; align-items: center; gap: 15px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand i { background: var(--accent); padding: 10px; border-radius: 12px; box-shadow: 0 0 20px rgba(37,99,235,0.4); }
+
+        .search-area { 
+            display: flex; 
+            gap: 8px; 
+            background: rgba(255,255,255,0.15); 
+            padding: 6px; 
+            border-radius: 14px; 
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 450px;
+        }
+        .search-area:focus-within { background: white; border-color: var(--accent); }
+        .search-area input { 
+            background: transparent; border: none; color: white; 
+            padding: 10px 15px; width: 100%; outline: none; font-size: 15px;
+        }
+        .search-area:focus-within input { color: var(--primary); }
+        .btn-search { 
+            background: var(--accent); color: white; border: none; 
+            padding: 10px 24px; border-radius: 10px; font-weight: 700; 
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
+        }
+        .btn-search:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37,99,235,0.4); }
+
+        /* Grid Layout */
+        .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
+
+        /* Card Styling */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            padding: 24px; 
+            margin-bottom: 25px; 
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
+        
+        .card-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-bottom: 24px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid #f1f5f9; 
+        }
+        .card-header i { color: var(--accent); font-size: 18px; }
+        .card-header h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Form Inputs */
+        .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input, select { 
+            padding: 12px 16px; 
+            border: 1.5px solid var(--border); 
+            border-radius: 12px; 
+            font-size: 14px; 
+            color: var(--text-dark);
+            background: #fdfdfd;
+            font-family: inherit;
+            font-weight: 500;
+        }
+        input:focus, select:focus { 
+            border-color: var(--accent); 
+            outline: none; 
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); 
+        }
+
+        .span-2 { grid-column: span 2; }
+        .span-4 { grid-column: span 4; }
+
+        /* Buttons UI */
+        .action-bar { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .btn-main { 
+            border: none; padding: 18px; border-radius: 15px; font-weight: 800; 
+            cursor: pointer; font-size: 15px; display: flex; align-items: center; 
+            justify-content: center; gap: 12px; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        .btn-save { background: var(--accent); color: white; box-shadow: 0 10px 20px rgba(37,99,235,0.2); }
+        .btn-update { background: var(--update); color: white; box-shadow: 0 10px 20px rgba(245,158,11,0.2); }
+        
+        .btn-sec-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-sec { 
+            padding: 14px; border-radius: 12px; border: 1.5px solid var(--border); 
+            font-weight: 700; cursor: pointer; background: white; font-size: 13px;
+        }
+        .btn-sec:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        /* Badge & Alerts */
+        .alumni-badge { 
+            position: absolute; top: -12px; right: 20px; 
+            background: var(--danger); color: white; padding: 6px 16px; 
+            border-radius: 30px; font-size: 11px; font-weight: 800; 
+            display: none; box-shadow: 0 4px 10px rgba(239,68,68,0.3);
+        }
+
+        .match-success { color: var(--success) !important; font-weight: 800; }
+        .match-error { color: var(--danger) !important; font-weight: 800; border-bottom: 2px dashed var(--danger); }
+
+        #toast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            padding: 16px 35px; border-radius: 50px; color: white; display: none; 
+            z-index: 9999; font-weight: 700; box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+
+        @media (max-width: 1100px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .action-bar { position: relative; top: 0; }
+            .span-2, .span-4 { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="toast"></div>
+    
+    <header class="top-nav">
+        <div class="brand">
+            <i class="fas fa-shield-halved"></i>
+            Student Profile
+        </div>
+        <div class="search-area" id="searchBox">
+            <input type="text" id="searchKey" placeholder="Search">
+            <button class="btn-search" id="searchBtn">
+                <i class="fas fa-search" id="searchIcon"></i>
+                <span id="searchText">SEARCH</span>
+            </button>
+        </div>
+    </header>
+
+    <form id="stuForm">
+        <div class="main-grid">
+            <div class="left-panel">
+                <div class="card">
+                    <div class="alumni-badge" id="alumniLabel"><i class="fas fa-history"></i> ALUMNI RECORD</div>
+                    <div class="card-header"><i class="fas fa-user-graduate"></i><h3>Academic & Core Details</h3></div>
+                    <div class="input-row">
+                        <div class="group"><label>Folio No.</label><input type="text" id="folio" placeholder="Required" required></div>
+                        <div class="group"><label>Session</label><select id="session"></select></div>
+                        <div class="group"><label>Branch</label><select id="branch" onchange="filterClasses()"></select></div>
+                        <div class="group"><label id="lbl_class">Class</label><select id="class" onchange="filterSections()"></select></div>
+                        <div class="group"><label>Section</label><select id="section"><option value="">SELECT</option></select></div>
+                        <div class="group span-2"><label id="lbl_name">Student Full Name</label><input type="text" id="studentName" required></div>
+                        <div class="group"><label>Gender</label><select id="gender"><option value="MALE">MALE</option><option value="FEMALE">FEMALE</option></select></div>
+                        <div class="group span-2"><label>Aadhaar Number</label><input type="text" id="aadhaar" class="aadhaar-input" maxlength="14" placeholder="0000-0000-0000"></div>
+                        <div class="group"><label>Date of Birth</label><input type="date" id="dob_raw"></div>
+                        <div class="group"><label>Category</label><select id="category"></select></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-users"></i><h3>Parents & Residential Details</h3></div>
+                    <div class="input-row">
+                        <div class="group span-2"><label>Father Name</label><input type="text" id="fatherName"></div>
+                        <div class="group span-2"><label>Father Aadhaar</label><input type="text" id="fatherAadhaar" class="aadhaar-input" maxlength="14"></div>
+                        <div class="group span-2"><label>Mother Name</label><input type="text" id="motherName"></div>
+                        <div class="group span-2"><label>Mother Aadhaar</label><input type="text" id="motherAadhaar" class="aadhaar-input" maxlength="14"></div>
+                        <div class="group span-4"><label>Current Full Address</label><input type="text" id="address"></div>
+                        <div class="group"><label>Primary Phone</label><input type="text" id="phone1"></div>
+                        <div class="group"><label>Secondary Phone</label><input type="text" id="phone2"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-id-card-clip"></i><h3>Admission & Status</h3></div>
+                    <div class="input-row">
+                        <div class="group"><label>Admission Date</label><input type="date" id="admissionDate"></div>
+                        <div class="group"><label>Adm. Type</label><select id="admType"></select></div>
+                        <div class="group"><label>RTE Year</label><select id="rteYear"></select></div>
+                        <div class="group"><label>Entry Status</label><select id="status"><option value="RECEIEVED">RECEIEVED</option><option value="ALL DONE">ALL DONE</option><option value="CORRECTION">CORRECTION</option><option value="ERROR">ERROR</option><option value="STAY-HOLD">STAY-HOLD</option><option value="DROPOUT">DROPOUT</option><option value="TAKE TC">TAKE TC</option></select></div>
+                        <div class="group span-4"><label>Internal Remark</label><input type="text" id="remark" placeholder="Any specific notes..."></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-bus-front"></i><h3>Transport Management</h3></div>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed var(--border);">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--primary);">
+                            <input type="checkbox" id="isTransport" onchange="toggleTransportFields()" style="width: 20px; height: 20px; accent-color: var(--accent);">
+                            <b>Enable School Transport Service</b>
+                        </label>
+                    </div>
+                    <div class="input-row">
+                        <div class="group span-2"><label>Route</label><select id="transRoute" class="disabled-field" style="opacity: 0.5; pointer-events: none;"></select></div>
+                        <div class="group span-2"><label>Stop Name</label><input type="text" id="stopName" class="disabled-field" style="opacity: 0.5; pointer-events: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="action-bar">
+                    <button type="submit" class="btn-main btn-save" id="saveBtn">
+                        <i class="fas fa-save"></i> <span>SAVE</span>
+                    </button>
+
+                    <button type="button" class="btn-main" style="background:var(--success); color:white; display:none;" id="restoreBtn" onclick="restoreStudent()">
+                        <i class="fas fa-sync"></i> RESTORE STUDENT
+                    </button>
+                    
+                    <div class="btn-sec-row">
+                        <button type="reset" class="btn-sec" onclick="clearFullForm()">CLEAR</button>
+                        <button type="button" class="btn-sec" style="color:var(--danger)" onclick="moveToAlumni()">ALUMNI</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-link"></i><h3>E-Shikshakosh</h3></div>
+                        <div class="group"><label id="lbl_ename">E-Name</label><input type="text" id="eName"></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                            <div class="group"><label id="lbl_eclass">E-Class</label><select id="eClass"></select></div>
+                            <div class="group"><label id="lbl_eblock">E-Block</label><select id="eBlock"></select></div>
+                        </div>
+                        <div class="group" style="margin-top:15px;"><label>State ID</label><input type="text" id="stateNo"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-fingerprint"></i><h3>U-DISE Portal</h3></div>
+                        <div class="group"><label id="lbl_uname">U-Name</label><input type="text" id="uName"></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                            <div class="group"><label id="lbl_uclass">U-Class</label><select id="uClass"></select></div>
+                            <div class="group"><label id="lbl_ublock">U-Section</label><select id="uSection"></select></div>
+                        </div>
+                        <div class="group" style="margin-top:15px;"><label>PEN Number</label><input type="text" id="penNo"></div>
+                        <div class="group" style="margin-top:15px;"><label>APAAR ID</label><input type="text" id="aapaarId"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-building-columns"></i><h3>Bank Details</h3></div>
+                        <div class="group"><label>Acc Holder Name</label><input type="text" id="accHolder"></div>
+                        <div class="group" style="margin-top:15px;"><label>Account Number</label><input type="text" id="accNo"></div>
+                        <div class="group" style="margin-top:15px;"><label>IFSC Code</label><input type="text" id="ifsc"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
+    authDomain: "",
+    databaseURL: "https://student-database-1882d-default-rtdb.firebaseio.com",
+    projectId: "student-database-1882d",
+    storageBucket: "",
+    messagingSenderId: "420379838808",
+    appId: ""
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let foundationData = {};
+
+const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
+const setV = (id, val) => {
+    document.getElementById(id).value = (val !== undefined && val !== null && val !== "") ? val : '';
+};
+
+const msg = (m, c="#0f172a") => { 
+    const t=document.getElementById('toast'); t.innerText=m; t.style.background=c; 
+    t.style.display='block'; setTimeout(()=>t.style.display='none',3000); 
+};
+
+function setUpdateMode(isUpdate) {
+    const btn = document.getElementById('saveBtn');
+    if(isUpdate) {
+        btn.className = "btn-main btn-update";
+        btn.innerHTML = `<i class="fas fa-edit"></i> UPDATE `;
+    } else {
+        btn.className = "btn-main btn-save";
+        btn.innerHTML = `<i class="fas fa-save"></i> SAVE `;
+    }
+}
+
+function clearFullForm() {
+    document.getElementById('stuForm').reset();
+    document.getElementById('alumniLabel').style.display = 'none';
+    document.getElementById('restoreBtn').style.display = 'none';
+    document.getElementById('saveBtn').style.display = 'flex';
+    setUpdateMode(false);
+    setV('searchKey', '');
+    toggleTransportFields();
+    checkMatches();
+    document.getElementById('searchKey').focus();
+}
+
+function toggleTransportFields() {
+    const isChecked = document.getElementById('isTransport').checked;
+    const fields = ['transRoute', 'stopName'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        el.style.opacity = isChecked ? "1" : "0.5";
+        el.style.pointerEvents = isChecked ? "auto" : "none";
+        if(!isChecked) setV(id, "");
+    });
+}
+
+function formatAadhaar(val) {
+    if(!val) return "";
+    let clean = val.toString().replace(/\D/g, '');
+    let res = "";
+    for(let i=0; i<clean.length && i<12; i++) { if(i>0 && i%4===0) res+='-'; res+=clean[i]; }
+    return res;
+}
+
+function dateToForm(dStr) {
+    if(!dStr) return "";
+    let d = new Date(dStr);
+    if(isNaN(d.getTime())) {
+        const p = dStr.split('-');
+        if(p.length===3) {
+            const m = {JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
+            return `${p[2]}-${m[p[1]] || '01'}-${p[0]}`;
+        }
+    }
+    return !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : "";
+}
+
+function filterClasses() {
+    const branch = getV('branch');
+    const classEl = document.getElementById('class');
+    const currentClass = classEl.value;
+    classEl.innerHTML = '<option value="">SELECT</option>';
+    document.getElementById('section').innerHTML = '<option value="">SELECT</option>';
+    if(!branch) return;
+    const filtered = Object.values(foundationData.classes || {}).filter(i => i.branch === branch);
+    const unique = [...new Set(filtered.map(i => i.className))];
+    unique.forEach(c => classEl.innerHTML += `<option value="${c}">${c}</option>`);
+    if(currentClass) classEl.value = currentClass;
+}
+
+function filterSections() {
+    const branch = getV('branch'), className = getV('class');
+    const secEl = document.getElementById('section');
+    const currentSec = secEl.value;
+    secEl.innerHTML = '<option value="">SELECT</option>';
+    if(!branch || !className) return;
+    const match = Object.values(foundationData.classes || {}).find(i => i.branch === branch && i.className === className);
+    if(match && match.sections) match.sections.split(',').forEach(s => secEl.innerHTML += `<option value="${s.trim()}">${s.trim()}</option>`);
+    if(currentSec) secEl.value = currentSec;
+}
+
+function findBranchByClass(className) {
+    if(!className || !foundationData.classes) return "";
+    const match = Object.values(foundationData.classes).find(c => c.className === className);
+    return match ? match.branch : "";
+}
+
+async function search(manualKey = null) {
+    const key = manualKey || getV('searchKey'); 
+    if(!key) return;
+    
+    const icon = document.getElementById('searchIcon'), text = document.getElementById('searchText');
+    icon.className = "fas fa-spinner fa-spin"; text.innerText = "SEARCHING...";
+    
+    try {
+        let studentData = null;
+        let isAlumni = false;
+
+        let snap = await db.ref(`student/${key}`).once('value');
+        if(snap.exists()) { studentData = snap.val(); } 
+        else {
+            const penSnap = await db.ref('student').orderByChild('govtMapping/udise/penNo').equalTo(key).once('value');
+            if(penSnap.exists()) { penSnap.forEach(child => { studentData = child.val(); }); }
+        }
+
+        if(!studentData) {
+            let aluSnap = await db.ref(`alumni/${key}`).once('value');
+            if(aluSnap.exists()) { studentData = aluSnap.val(); isAlumni = true; }
+            else {
+                const aluPenSnap = await db.ref('alumni').orderByChild('govtMapping/udise/penNo').equalTo(key).once('value');
+                if(aluPenSnap.exists()) { aluPenSnap.forEach(child => { studentData = child.val(); }); isAlumni = true; }
+            }
+        }
+
+        if(studentData) {
+            setUpdateMode(true);
+            document.getElementById('alumniLabel').style.display = isAlumni ? 'block' : 'none';
+            document.getElementById('restoreBtn').style.display = isAlumni ? 'flex' : 'none';
+            document.getElementById('saveBtn').style.display = isAlumni ? 'none' : 'flex';
+
+            let assignedBranch = studentData.academic.branch || findBranchByClass(studentData.academic.class);
+            setV('folio', studentData.profile.folio);
+            setV('session', studentData.academic.session);
+            setV('branch', assignedBranch);
+            filterClasses();
+            setV('class', studentData.academic.class);
+            filterSections();
+            setV('section', studentData.academic.section);
+            setV('studentName', studentData.profile.studentName);
+            setV('gender', studentData.profile.gender);
+            setV('category', studentData.profile.category);
+            setV('aadhaar', formatAadhaar(studentData.profile.aadhaar || ''));
+            setV('dob_raw', dateToForm(studentData.profile.dob));
+
+            document.getElementById('isTransport').checked = (studentData.transport && studentData.transport.enabled) || false;
+            toggleTransportFields();
+            setV('transRoute', studentData.transport ? studentData.transport.route : '');
+            setV('stopName', studentData.transport ? studentData.transport.stop : '');
+
+            setV('fatherName', studentData.parents.father.name);
+            setV('fatherAadhaar', formatAadhaar(studentData.parents.father.aadhaar || ''));
+            setV('motherName', studentData.parents.mother.name);
+            setV('motherAadhaar', formatAadhaar(studentData.parents.mother.aadhaar || ''));
+            setV('address', studentData.contact.address);
+            setV('phone1', studentData.contact.phone1);
+            setV('phone2', studentData.contact.phone2);
+
+            const ePath = studentData.govtMapping?.eshikshakosh || {};
+            setV('eName', ePath.eshikshaName || "");
+            setV('eClass', ePath.eClass || "");
+            setV('eBlock', ePath.eBlock || "");
+            setV('stateNo', ePath.stateNo || "");
+
+            const uPath = studentData.govtMapping?.udise || {};
+            setV('uName', uPath.udiseName || "");
+            setV('uClass', uPath.uClass || "");
+            setV('uSection', uPath.uSection || "");
+            setV('penNo', uPath.penNo || "");
+            setV('aapaarId', uPath.aapaarId || "");
+
+            setV('accHolder', studentData.bank.accountHolder); setV('accNo', studentData.bank.accountNo); setV('ifsc', studentData.bank.ifsc);
+            setV('admissionDate', dateToForm(studentData.admission.admissionDate));
+            setV('admType', studentData.admission.type);
+            setV('rteYear', studentData.admission.rteYear);
+            setV('status', studentData.remark.status);
+            setV('remark', studentData.remark.note);
+
+            msg(isAlumni ? "Alumni Record Found!" : "Record Found!", isAlumni ? "#ef4444" : "#10b981");
+            checkMatches();
+        } else {
+            msg("No Record Found", "#ef4444");
+        }
+    } catch(e) { msg("Search Error", "#ef4444"); } 
+    finally {
+        icon.className = "fas fa-search"; text.innerText = "SEARCH";
+        if(!manualKey) {
+            setV('searchKey', ''); 
+            document.getElementById('searchKey').focus();
+        }
+    }
+}
+
+async function moveToAlumni() {
+    const f = getV('folio');
+    if(!f) return msg("No Folio Selected", "#ef4444");
+    if(confirm(`Move Folio ${f} to Alumni?`)) {
+        const snap = await db.ref(`student/${f}`).once('value');
+        if(snap.exists()) {
+            await db.ref(`alumni/${f}`).set(snap.val());
+            await db.ref(`student/${f}`).remove();
+            msg("Moved to Alumni Successfully", "#f59e0b");
+            clearFullForm();
+        }
+    }
+}
+
+async function restoreStudent() {
+    const f = getV('folio');
+    if(confirm(`Do you want to restore Folio ${f} from Alumni?`)) {
+        const snap = await db.ref(`alumni/${f}`).once('value');
+        if(snap.exists()) {
+            await db.ref(`student/${f}`).set(snap.val());
+            await db.ref(`alumni/${f}`).remove();
+            msg("Student Restored Successfully!", "#10b981");
+            clearFullForm();
+        }
+    }
+}
+
+function checkMatches() {
+    const n = getV('studentName'), en = getV('eName'), un = getV('uName');
+    const c = getV('class'), ec = getV('eClass'), uc = getV('uClass');
+    const eb = getV('eBlock'), ub = getV('uSection');
+    const mN = (n === en && en === un && n !== "");
+    const mC = (c === ec && ec === uc && c !== "");
+    const mB = (eb === ub && eb !== "");
+
+    ['lbl_name','lbl_ename','lbl_uname'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.className = mN ? "match-success" : (n && en && un ? "match-error" : "");
+    });
+    ['lbl_class','lbl_eclass','lbl_uclass'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.className = mC ? "match-success" : (c && ec && uc ? "match-error" : "");
+    });
+    ['lbl_eblock','lbl_ublock'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.className = mB ? "match-success" : (eb && ub ? "match-error" : "");
+    });
+}
+
+async function init() {
+    const snap = await db.ref('foundation').once('value');
+    foundationData = snap.val() || {};
+    const fill = (id, list, fld = 'name') => {
+        const el = document.getElementById(id); if(!el) return;
+        el.innerHTML = '<option value="">SELECT</option>';
+        if(list) Object.values(list).forEach(i => el.innerHTML += `<option value="${i[fld]}">${i[fld]}</option>`);
+    };
+    fill('session', foundationData.sessions); fill('rteYear', foundationData.sessions);
+    fill('branch', foundationData.branches); fill('category', foundationData.categories);
+    fill('admType', foundationData.admission); fill('eBlock', foundationData.eblock);
+    fill('uSection', foundationData.ublock); fill('transRoute', foundationData.transport, 'groupName');
+
+    const clsUnique = [...new Set(Object.values(foundationData.classes || {}).map(x => x.className))];
+    ['eClass','uClass'].forEach(id => {
+        const el = document.getElementById(id); if(!el) return;
+        el.innerHTML = '<option value="">SELECT</option>';
+        clsUnique.forEach(c => el.innerHTML += `<option value="${c}">${c}</option>`);
+    });
+
+    // AUTO SEARCH FROM URL PARAMS
+    const urlParams = new URLSearchParams(window.location.search);
+    const folioFromUrl = urlParams.get('folio');
+    if(folioFromUrl) {
+        search(folioFromUrl);
+    }
+}
+
+document.getElementById('stuForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const f = getV('folio');
+    if(!f) return msg("Folio is required!", "#ef4444");
+    
+    const dbData = {
+        academic: { branch: getV('branch'), class: getV('class'), section: getV('section'), session: getV('session') },
+        transport: { enabled: document.getElementById('isTransport').checked, route: getV('transRoute'), stop: getV('stopName') },
+        admission: { admissionDate: getV('admissionDate'), rteYear: getV('rteYear'), type: getV('admType') },
+        bank: { accountHolder: getV('accHolder'), accountNo: getV('accNo'), ifsc: getV('ifsc') },
+        contact: { address: getV('address'), phone1: getV('phone1'), phone2: getV('phone2') },
+        govtMapping: {
+            eshikshakosh: { eBlock: getV('eBlock'), eClass: getV('eClass'), eshikshaName: getV('eName'), stateNo: getV('stateNo') },
+            udise: { penNo: getV('penNo'), uClass: getV('uClass'), uSection: getV('uSection'), udiseName: getV('uName'), aapaarId: getV('aapaarId') }
+        },
+        parents: {
+            father: { aadhaar: getV('fatherAadhaar').replace(/-/g,''), name: getV('fatherName') },
+            mother: { aadhaar: getV('motherAadhaar').replace(/-/g,''), name: getV('motherName') }
+        },
+        profile: { aadhaar: getV('aadhaar').replace(/-/g,''), category: getV('category'), dob: getV('dob_raw'), folio: f, gender: getV('gender'), studentName: getV('studentName') },
+        remark: { note: getV('remark'), status: getV('status') }
+    };
+    await db.ref(`student/${f}`).set(dbData);
+    msg("Data Synchronized Successfully!", "#10b981");
+    clearFullForm();
+};
+
+document.querySelectorAll('.aadhaar-input').forEach(el => {
+    el.oninput = (e) => e.target.value = formatAadhaar(e.target.value);
+});
+
+document.addEventListener('input', (e) => {
+    if(e.target.tagName === 'INPUT' && e.target.type === 'text' && e.target.id !== 'searchKey') {
+        const s = e.target.selectionStart;
+        e.target.value = e.target.value.toUpperCase();
+        e.target.setSelectionRange(s, s);
+    }
+    checkMatches();
+});
+
+document.getElementById('searchBtn').onclick = () => search();
+document.getElementById('searchKey').onkeypress = (e) => { if(e.key==='Enter') search(); };
+
+init();
+</script>
+</body>
+</html>
