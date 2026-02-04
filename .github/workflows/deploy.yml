@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: "gh-pages-deploy"
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -23,10 +27,22 @@ jobs:
           mkdir -p deploy_build
           rsync -av --exclude='.git' . deploy_build/
 
-      - name: Inject Secrets (Targeted File)
+      - name: Verify index.html Exists
         working-directory: deploy_build
         run: |
-          FILE="Student/Student.html"
+          FILE="index.html"
+
+          if [ ! -f "$FILE" ]; then
+            echo "❌ ERROR: index.html not found!"
+            echo "Available root files:"
+            ls -R . || true
+            exit 1
+          fi
+
+      - name: Inject Firebase Secrets into index.html
+        working-directory: deploy_build
+        run: |
+          FILE="index.html"
 
           sed -i \
             -e "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" \
@@ -38,7 +54,7 @@ jobs:
             -e "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" \
             "$FILE"
 
-      - name: Production Deployment
+      - name: Production Deployment to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: deploy_build
