@@ -39,20 +39,30 @@ jobs:
             exit 1
           fi
 
-      - name: Inject Firebase Secrets into index.html
+      - name: Inject Firebase Secrets into index.html (URL-SAFE)
         working-directory: deploy_build
         run: |
           FILE="index.html"
 
+          # 🔧 FIX: Escape slashes in Firebase URL so sed doesn't break it
+          ESCAPED_DB_URL="${{ secrets.VITE_FIREBASE_DB_URL }}"
+          ESCAPED_DB_URL=${ESCAPED_DB_URL//\//\\/}
+
           sed -i \
             -e "s#VITE_FIREBASE_API_KEY#${{ secrets.VITE_FIREBASE_API_KEY }}#g" \
             -e "s#VITE_FIREBASE_AUTH_DOMAIN#${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}#g" \
-            -e "s#VITE_FIREBASE_DB_URL#${{ secrets.VITE_FIREBASE_DB_URL }}#g" \
+            -e "s#VITE_FIREBASE_DB_URL#$ESCAPED_DB_URL#g" \
             -e "s#VITE_FIREBASE_PROJECT_ID#${{ secrets.VITE_FIREBASE_PROJECT_ID }}#g" \
             -e "s#VITE_FIREBASE_STORAGE_BUCKET#${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}#g" \
             -e "s#VITE_FIREBASE_MESSAGING_ID#${{ secrets.VITE_FIREBASE_MESSAGING_ID }}#g" \
             -e "s#VITE_FIREBASE_APP_ID#${{ secrets.VITE_FIREBASE_APP_ID }}#g" \
             "$FILE"
+
+      - name: Debug Injected Config (Safe Check)
+        working-directory: deploy_build
+        run: |
+          echo "===== FINAL Firebase Config in index.html ====="
+          grep -n "firebaseConfig" -A10 index.html
 
       - name: Production Deployment to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
