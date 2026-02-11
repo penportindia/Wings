@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School ERP - Professional Admin</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="modules/staff/roster.js"></script>
+
+    <style>
+        * { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            cursor: default; 
+        }
+        input, button { 
+            cursor: pointer; 
+        }
+        ::-webkit-scrollbar { 
+            width: 5px; 
+        }
+        ::-webkit-scrollbar-track { 
+            background: #050505; 
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: #1e293b; 
+            border-radius: 10px; 
+        }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+        .sidebar { 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            width: 260px; 
+            overflow-x: hidden; 
+        }
+        .sidebar.collapsed { 
+            width: 85px; 
+        }
+        .sidebar.collapsed .profile-info, 
+        .sidebar.collapsed .nav-text, 
+        .sidebar.collapsed .menu-label { 
+            display: none; 
+        }
+        .sidebar.collapsed .profile-card { 
+            background: transparent; 
+            border: none; 
+            padding: 12px 0; 
+            justify-content: center; 
+        }
+        .nav-tab { 
+            transition: all 0.2s; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            padding: 12px 18px; 
+            margin: 4px 12px; 
+            color: #94a3b8; 
+            border-radius: 12px; 
+        }
+        .nav-tab:hover { 
+            background: #1e293b; 
+            color: white; 
+        }
+        .nav-tab.active { 
+            background: #4f46e5; 
+            color: white; 
+        }
+        .sub-menu-container { 
+            margin-left: 28px; 
+            border-left: 1px solid #1e293b; 
+            display: none; 
+        }
+        .sub-menu-container.open { 
+            display: block; 
+        }
+        .menu-label { 
+            margin: 20px 24px 8px; 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: #475569; 
+            letter-spacing: 0.1em; 
+            text-transform: uppercase; 
+        }
+        ::-webkit-scrollbar { 
+            width: 4px; 
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: #1e293b; 
+            border-radius: 10px; 
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+</head>
+<body class="overflow-hidden">
+
+    <div id="login-portal" class="fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center font-sans overflow-hidden p-4">
+        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-indigo-600/30 rounded-full blur-[140px] opacity-50 animate-pulse"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[700px] h-[700px] bg-blue-600/20 rounded-full blur-[160px] opacity-40"></div>
+
+        <div class="w-full max-w-[1050px] h-full max-h-[750px] bg-white/[0.03] backdrop-blur-[30px] border border-white/10 rounded-[50px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] flex overflow-hidden relative">
+            <div class="hidden md:flex w-1/2 p-20 flex-col justify-between relative bg-[#050505] border-r border-white/10 overflow-hidden">
+    
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full"></div>
+                    <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-purple-600/10 blur-[100px] rounded-full"></div>
+                </div>
+
+                <div class="relative z-10">
+                    <div class="flex items-center gap-4 mb-12">
+                        <span class="h-[2px] w-12 bg-gradient-to-r from-indigo-500 to-transparent"></span>
+                        <span class="text-indigo-400 font-black tracking-[0.6em] text-[11px] uppercase">
+                            Penport India
+                        </span>
+                    </div>
+
+                    <h1 class="text-8xl font-black text-white leading-[0.85] tracking-tighter mb-8">
+                        School <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 drop-shadow-[0_10px_10px_rgba(99,102,241,0.3)]">
+                            OS.
+                        </span>
+                    </h1>
+
+                    <p class="text-yellow-400 text-[13px] font-black leading-relaxed max-w-sm italic tracking-widest uppercase bg-yellow-400/5 py-1 px-3 border-l-4 border-yellow-400 inline-block shadow-lg">
+                        ⚡ Unleashing Excellence: Automating the Future of Modern Education.
+                    </p>
+                </div>
+
+                <div class="space-y-8 relative z-10">
+                    
+                    <div class="group flex items-center gap-6 p-4 rounded-2xl transition-all duration-300 hover:bg-white/[0.03]">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/20 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform">
+                            <i data-lucide="zap" class="text-yellow-400 w-7 h-7 fill-yellow-400/20"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-black text-xl tracking-tight leading-none">Instant Sync</h4>
+                            <p class="text-slate-400 text-sm mt-2 font-medium">Real-time data precision across your entire campus.</p>
+                        </div>
+                    </div>
+
+                    <div class="group flex items-center gap-6 p-4 rounded-2xl transition-all duration-300 hover:bg-white/[0.03]">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/20 flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform">
+                            <i data-lucide="shield-check" class="text-emerald-400 w-7 h-7 fill-emerald-400/20"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-black text-xl tracking-tight leading-none">Academic Trust</h4>
+                            <p class="text-slate-400 text-sm mt-2 font-medium">Fortress-grade security for your institution's data.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-8 lg:p-16 relative overflow-hidden">
+                <div class="w-full max-w-[340px]">
+                    <div class="mb-10 flex items-center justify-between md:justify-start gap-6 group">
+                        <div class="flex flex-col border-r border-white/10 pr-6">
+                            <h1 class="text-4xl font-black tracking-tighter leading-none">
+                                <span class="text-white drop-shadow-md">THE</span>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 ml-1">
+                                    WINGS
+                                </span>
+                            </h1>
+                            
+                            <div class="mt-3 flex items-center gap-3">
+                                <p class="text-[8px] font-bold uppercase tracking-[0.5em] text-slate-400/80">
+                                    Foundation Academy
+                                </p>
+                                <div class="h-[1px] w-12 bg-gradient-to-r from-slate-500/50 to-transparent"></div>
+                            </div>
+
+                            <div class="mt-4 self-start inline-flex items-center px-2 py-0.5 rounded border border-white/10 bg-white/5">
+                                <p class="text-[10px] font-medium text-blue-300 uppercase tracking-widest">
+                                    Welcome Back
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-center">
+                            <img src="https://i.ibb.co/9kGbqWb7/Logo.png" alt="Logo" class="h-24 w-auto object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover:scale-105" />
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="relative group">
+                            <input id="login-phone" type="tel" placeholder="Mobile Number" 
+                                class="w-full px-7 py-5 bg-white/[0.04] border border-white/10 rounded-2xl focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all font-bold text-white outline-none text-lg placeholder:text-slate-600">
+                        </div>
+
+                        <div class="relative group">
+                            <input id="login-pass" type="password" placeholder="Security PIN" 
+                                class="w-full px-7 py-5 bg-white/[0.04] border border-white/10 rounded-2xl focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all font-bold text-white outline-none text-lg tracking-[0.3em] placeholder:text-slate-600 placeholder:tracking-normal">
+                            <button type="button" onclick="togglePassword()" 
+                                class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors p-2">
+                                <i id="eye-ico" data-lucide="eye" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="pt-2">
+                            <button id="login-btn" onclick="Auth.handleLogin()" 
+                                class="w-full relative group overflow-hidden bg-white text-black font-black py-5 rounded-2xl transition-all active:scale-[0.96] flex items-center justify-center gap-3 text-lg tracking-tight">
+                                <span class="relative z-10">GET STARTED</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 space-y-5">
+                        <div class="flex items-center justify-between px-1">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                                    <i data-lucide="phone" class="w-4 h-4 text-indigo-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">Call Support</p>
+                                    <a href="tel:+917004848750" class="text-slate-200 font-bold text-sm hover:text-indigo-400 transition-colors">+91 7004848750</a>
+                                </div>
+                            </div>
+                            
+                            <div class="h-8 w-px bg-white/10"></div>
+                            
+                            <a href="YOUR_URL_HERE" class="group flex flex-col items-end">
+                                <p class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">Need Help?</p>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 font-bold text-sm group-hover:brightness-125 transition-all">
+                                    Try Demo →
+                                </span>
+                            </a>
+                        </div>
+
+                        <a href="YOUR_URL_HERE" class="block relative group cursor-pointer overflow-hidden rounded-2xl p-[1px] bg-gradient-to-r from-white/10 via-white/5 to-white/10">
+                            <div class="bg-[#0c0c0c]/80 backdrop-blur-md rounded-2xl p-4 flex items-center justify-center gap-3 border border-white/5 group-hover:border-indigo-500/40 transition-all">
+                                <span class="text-[11px] text-slate-400 font-medium tracking-wide">Experience the power of</span>
+                                <span class="text-[11px] text-white font-black tracking-[0.15em] uppercase bg-indigo-600/20 px-2 py-1 rounded-md border border-indigo-500/30">School OS</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="flex justify-center items-center pt-8">
+                        <a href="https://penportindia.github.io/penport/" target="_blank" class="group relative px-6 py-3 transition-all duration-500">
+                            <div class="absolute inset-0 bg-blue-500/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative flex items-center gap-3">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                </span>
+                                <div class="flex flex-col items-start">
+                                    <p class="text-[9px] font-medium text-slate-500 uppercase tracking-[0.3em] leading-none mb-1">Designed by</p>
+                                    <p class="text-sm font-bold text-slate-200 tracking-wide group-hover:text-white transition-colors duration-300">
+                                        Penport <span class="text-blue-500 group-hover:text-blue-400">India</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-500 ease-out group-hover:w-full"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-shell" class="hidden flex h-screen">
+        <aside id="sidebar" class="sidebar bg-[#0f172a] h-full flex flex-col shrink-0">
+            <div class="p-4 mt-2">
+                <div onclick="toggleSidebar()" class="profile-card flex items-center gap-3 bg-[#1e293b] p-3 rounded-2xl border border-slate-700/50 cursor-pointer hover:bg-slate-800 transition-colors">
+                    <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg">
+                        <i data-lucide="user" class="w-7 h-7"></i>
+                    </div>
+                    <div class="profile-info overflow-hidden">
+                        <p id="user-side-name" class="text-white font-bold text-sm truncate">User Name</p>
+                        <p id="user-side-role" class="text-indigo-300 text-[10px] font-black uppercase tracking-wider">Designation</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 mt-2 overflow-y-auto">
+                <div onclick="App.handleMenuInteraction('home', 'modules/dashboard/main.js', 'Dashboard')" id="nav-home" class="nav-tab active">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 shrink-0"></i>
+                    <span class="nav-text ml-4 font-bold text-sm">Dashboard</span>
+                </div>
+                
+                <div class="menu-label">Management</div>
+                <div id="dynamic-menu-items"></div>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800">
+                <div onclick="Auth.handleLogout()" class="nav-tab text-rose-400 hover:bg-rose-500/10">
+                    <i data-lucide="log-out" class="w-6 h-6 shrink-0"></i>
+                    <span class="nav-text ml-4 font-bold text-sm">Sign Out</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
+            <div id="main-content" class="flex-1 overflow-y-auto p-8"></div>
+        </main>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCGsnpr6SVf7rbSnRi2ipt5suZD99B2u4",
+            databaseURL: "https://student-database-1882d-default-rtdb.firebaseio.com",
+            projectId: "student-database-1882d"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const ModuleRegistry = [
+            {
+                id: 'academics',
+                label: 'Academics',
+                icon: 'book-open',
+                subMenus: [
+                    { id: 'subjects', label: 'Subjects', file: 'modules/academics/subjects.js' },
+                    { id: 'class_schedule', label: 'Schedule', file: 'modules/academics/schedule.js' },
+                    { id: 'syllabus', label: 'Syllabus', file: 'modules/academics/syllabus.js' },
+                    { id: 'holidays', label: 'Holidays', file: 'modules/academics/holidays.js' }
+                ]
+            },
+            {
+                id: 'student_mgt',
+                label: 'Students',
+                icon: 'graduation-cap',
+                subMenus: [
+                    { id: 'admission', label: 'Admission', file: 'modules/students/registration.js' },
+                    { id: 'manage_students', label: 'Manage', file: 'modules/students/manage.js' },
+                    { id: 'student_list', label: 'Directory', file: 'modules/students/list.js' },
+                    { id: 'roll_assign', label: 'Roll Assign', file: 'modules/students/roll_assign.js' },
+                    { id: 'alumni', label: 'Alumni', file: 'modules/students/alumni.js' }
+                ]
+            },
+            {
+                id: 'staff_mgt',
+                label: 'Staff',
+                icon: 'users',
+                subMenus: [
+                    { id: 'manage_staff', label: 'Add & Manage', file: 'modules/staff/manage.js' },
+                    { id: 'staff_list', label: 'Directory', file: 'modules/staff/list.js' }
+                ]
+            },
+            {
+                id: 'finance_accounts',
+                label: 'Accounts',
+                icon: 'wallet',
+                subMenus: [
+                    { id: 'fee_setup', label: 'Fee Setup', file: 'modules/finance/fee_setup.js' },
+                    { id: 'fee_collection', label: 'Collect Fees', file: 'modules/finance/fees.js' },
+                    { id: 'due_demand', label: 'Dues', file: 'modules/finance/dues.js' },
+                    { id: 'daybook', label: 'Daybook', file: 'modules/finance/daybook.js' },
+                    { id: 'payment_reports', label: 'Payments Reports', file: 'modules/finance/reports.js' }
+                ]
+            },
+            {
+                id: 'homework_mgt',
+                label: 'Homework',
+                icon: 'pencil',
+                subMenus: [
+                    { id: 'add_homework', label: 'Add Homework', file: 'modules/homework/add.js' },
+                    { id: 'view_homework', label: 'View Homework', file: 'modules/homework/view.js' }
+                ]
+            },
+            {
+                id: 'attendance_mgt',
+                label: 'Attendance',
+                icon: 'clipboard-check',
+                subMenus: [
+                    { id: 'student_attendance', label: 'Students', file: 'modules/attendance/students.js' },
+                    { id: 'staff_attendance', label: 'Staff', file: 'modules/attendance/staff.js' }
+                ]
+            },
+            {
+                id: 'examination',
+                label: 'Exams',
+                icon: 'file-spreadsheet',
+                subMenus: [
+                    { id: 'exam_scheduling', label: 'Schedule', file: 'modules/exams/scheduling.js' },
+                    { id: 'exam_timetable', label: 'Timetable', file: 'modules/exams/timetable.js' },
+                    { id: 'report_cards', label: 'Report Cards', file: 'modules/exams/report_cards.js' }
+                ]
+            },
+            {
+                id: 'notice_board',
+                label: 'Notice',
+                icon: 'bell',
+                file: 'modules/notice/notice.js'
+            },
+            {
+                id: 'settings',
+                label: 'Setting',
+                icon: 'settings',
+                subMenus: [
+                    { id: 'foundation', label: 'Foundation', file: 'modules/settings/foundation.js' },
+                    { id: 'bulk_entry', label: 'Bulk Entry', file: 'modules/settings/bulk.js' },
+                    { id: 'promote', label: 'Promote', file: 'modules/settings/promote.js' }
+                ]
+            }
+        ];
+
+        const RolePermissions = {
+            'PRINCIPAL': [
+                'academics', 'subjects', 'class_schedule', 'syllabus', 'holidays',
+                'student_mgt', 'admission', 'manage_students', 'student_list', 'roll_assign', 'alumni',
+                'staff_mgt', 'manage_staff', 'staff_list',
+                'finance_accounts', 'fee_setup', 'fee_collection', 'due_demand', 'daybook', 'payment_reports',
+                'homework_mgt', 'add_homework', 'view_homework',
+                'attendance_mgt', 'student_attendance', 'staff_attendance',
+                'examination', 'exam_scheduling', 'exam_timetable', 'report_cards',
+                'notice_board',
+                'settings', 'foundation', 'bulk_entry', 'promote'
+            ],
+            'COORDINATOR': [
+                'academics', 'subjects', 'class_schedule', 'syllabus', 'holidays',
+                'student_mgt', 'admission', 'manage_students', 'student_list', 'roll_assign', 'alumni',
+                'staff_mgt', 'manage_staff', 'staff_list',
+                'finance_accounts', 'fee_setup', 'fee_collection', 'due_demand', 'daybook', 'payment_reports',
+                'homework_mgt', 'add_homework', 'view_homework',
+                'attendance_mgt', 'student_attendance', 'staff_attendance',
+                'examination', 'exam_scheduling', 'exam_timetable', 'report_cards',
+                'notice_board',
+                'settings', 'foundation', 'bulk_entry', 'promote'
+            ],
+            'ACCOUNTANT': [],
+            'ADMIN': [],
+            'CLEARK': [
+                'academics', 'subjects', 'class_schedule', 'syllabus', 'holidays',
+                'student_mgt', 'admission', 'manage_students', 'student_list', 'roll_assign', 'alumni',
+                'staff_mgt', 'manage_staff', 'staff_list',
+                'finance_accounts', 'due_demand',
+                'homework_mgt', 'add_homework', 'view_homework',
+                'attendance_mgt', 'student_attendance', 'staff_attendance',
+                'examination', 'exam_scheduling', 'exam_timetable', 'report_cards',
+                'notice_board',
+                'settings', 'foundation', 'bulk_entry', 'promote'
+
+            ]
+        };
+
+        const App = {
+            state: { user: null, role: null },
+
+            init() {
+                const saved = localStorage.getItem('school_app_session');
+                if (saved) {
+                    this.state = JSON.parse(saved);
+                    this.renderUI();
+                }
+            },
+
+            renderUI() {
+                document.getElementById('login-portal').classList.add('hidden');
+                document.getElementById('app-shell').classList.remove('hidden');
+                
+                document.getElementById('user-side-name').innerText = this.state.user.name;
+                document.getElementById('user-side-role').innerText = this.state.user.designation;
+
+                this.buildSidebar();
+                this.loadModule('home', 'modules/dashboard/main.js', 'Dashboard');
+            },
+
+            buildSidebar() {
+                const container = document.getElementById('dynamic-menu-items');
+                const allowedIds = RolePermissions[this.state.role] || [];
+                
+                container.innerHTML = ModuleRegistry.filter(m => allowedIds.includes(m.id)).map(m => `
+                    <div class="nav-group">
+                        <div onclick="App.handleMenuInteraction('${m.id}', null, '${m.label}', true)" class="nav-tab">
+                            <i data-lucide="${m.icon}" class="w-6 h-6 shrink-0"></i>
+                            <span class="nav-text ml-4 font-bold text-sm">${m.label}</span>
+                        </div>
+                        <div id="sub-${m.id}" class="sub-menu-container">
+                            ${m.subMenus ? m.subMenus.filter(sm => allowedIds.includes(sm.id)).map(sm => `
+                                <div onclick="App.loadModule('${sm.id}', '${sm.file}', '${sm.label}')" id="nav-${sm.id}" class="nav-tab text-xs py-2">
+                                    <span class="nav-text font-semibold">${sm.label}</span>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            },
+
+            handleMenuInteraction(id, file, label, hasSub = false) {
+                const sb = document.getElementById('sidebar');
+                if (sb.classList.contains('collapsed')) toggleSidebar();
+
+                if (hasSub) {
+                    const el = document.getElementById(`sub-${id}`);
+                    if(!el) return;
+                    const isOpen = el.classList.contains('open');
+                    document.querySelectorAll('.sub-menu-container').forEach(c => c.classList.remove('open'));
+                    if (!isOpen) el.classList.add('open');
+                } else {
+                    this.loadModule(id, file, label);
+                }
+            },
+
+            async loadModule(id, filePath, label) {
+                document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+                const target = document.getElementById(`nav-${id}`);
+                if(target) target.classList.add('active');
+                
+                document.getElementById('main-content').innerHTML = `
+                    <div id="loader-container" class="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+                        <div class="relative w-16 h-16 mb-4">
+                            <div class="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+                            <div class="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
+                        </div>
+                        <p class="font-bold tracking-widest text-xs animate-pulse">LOADING MODULE...</p>
+                        <div id="retry-btn" class="hidden mt-6">
+                            <button onclick="App.loadModule('${id}', '${filePath}', '${label}')" class="px-6 py-2 bg-slate-800 text-white rounded-full text-sm font-bold flex items-center hover:bg-slate-700 transition-all">
+                                <i data-lucide="refresh-ccw" class="w-4 h-4 mr-2"></i> RETRY
+                            </button>
+                        </div>
+                    </div>`;
+                lucide.createIcons();
+
+                const timeout = setTimeout(() => {
+                    const rBtn = document.getElementById('retry-btn');
+                    if(rBtn) rBtn.classList.remove('hidden');
+                }, 5000);
+
+                const oldScript = document.getElementById('module-script');
+                if (oldScript) oldScript.remove();
+
+                const script = document.createElement('script');
+                script.id = 'module-script';
+                script.src = `${filePath}?v=${Date.now()}`;
+                script.onerror = () => {
+                    clearTimeout(timeout);
+                    document.getElementById('retry-btn').classList.remove('hidden');
+                };
+                script.onload = () => {
+                    clearTimeout(timeout);
+                    const funcName = `init_${id}`;
+                    if (typeof window[funcName] === 'function') window[funcName](this.state);
+                };
+                document.body.appendChild(script);
+            }
+        };
+
+        const Auth = {
+            async handleLogin() {
+                const phoneInput = document.getElementById('login-phone').value.trim();
+                const passInput = document.getElementById('login-pass').value.trim();
+                const btn = document.getElementById('login-btn');
+
+                if (!phoneInput || !passInput) {
+                    return Swal.fire('Error', 'Please enter Phone and PIN', 'warning');
+                }
+
+                if (btn) btn.disabled = true;
+
+                try {
+                    let snap = await db.ref('employees').orderByChild('phone').equalTo(phoneInput).once('value');
+                    if (!snap.exists()) {
+                        snap = await db.ref('employees').orderByChild('phone').equalTo(Number(phoneInput)).once('value');
+                    }
+
+                    if (snap.exists()) {
+                        let loginSuccess = false;
+                        snap.forEach(child => {
+                            const user = child.val();
+                            if (user.password === passInput || user.password === btoa(passInput)) {
+                                const desig = (user.designation || "").toUpperCase();
+                                let role = 'TEACHER'; 
+                                if (desig.includes('PRINCIPAL')) role = 'PRINCIPAL';
+                                else if (desig.includes('COORDINATOR')) role = 'COORDINATOR';
+                                else if (desig.includes('ADMIN')) role = 'ADMIN';
+                                else if (desig.includes('ACCOUNTANT')) role = 'ACCOUNTANT';
+                                else if (desig.includes('CLEARK') || desig.includes('CLERK')) role = 'CLEARK';
+
+                                App.state = { user, role };
+                                localStorage.setItem('school_app_session', JSON.stringify(App.state));
+                                loginSuccess = true;
+                                App.renderUI();
+                            }
+                        });
+                        if (!loginSuccess) Swal.fire('Error', 'Invalid Security PIN', 'error');
+                    } else {
+                        Swal.fire('Error', 'Phone number not registered', 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'Connection failed', 'error');
+                } finally {
+                    if (btn) btn.disabled = false;
+                }
+            },
+
+            handleLogout() {
+                localStorage.removeItem('school_app_session');
+                location.reload();
+            }
+        };
+
+        function togglePassword() {
+            const p = document.getElementById('login-pass');
+            const i = document.getElementById('eye-ico');
+            if(p.type==='password'){
+                p.type='text';
+                i.setAttribute('data-lucide','eye-off');
+            } else {
+                p.type='password';
+                i.setAttribute('data-lucide','eye');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('collapsed');
+            lucide.createIcons();
+        }
+
+        App.init();
+    </script>
+</body>
+</html>
